@@ -29,4 +29,5 @@ object model {
                      cleanedText: String = ""
                     )
 
+  case class GoogleNewsTerms(list: List[String])
 }

@@ -24,6 +24,7 @@ import scala.collection.JavaConversions._
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.Try
+import scala.language.postfixOps
 
 
 object FeedSourceScheduler {

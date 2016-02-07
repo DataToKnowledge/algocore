@@ -11,7 +11,8 @@ scalacOptions ++= Seq("-target:jvm-1.7", "-feature")
 resolvers ++= Seq(
   "spray repo" at "http://repo.spray.io",
   Resolver.sonatypeRepo("public"),
-  Resolver.typesafeRepo("releases")
+  Resolver.typesafeRepo("releases"),
+  Resolver.jcenterRepo
 )
 
 libraryDependencies ++= Seq(
@@ -26,7 +27,13 @@ libraryDependencies ++= Seq(
   "org.json4s" %% "json4s-jackson" % "3.2.11",
   "org.json4s" %% "json4s-ext" % "3.2.11",
   "com.github.nscala-time" %% "nscala-time" % "2.8.0",
-  "com.github.crawler-commons" % "crawler-commons" % "0.6"
+  "com.github.crawler-commons" % "crawler-commons" % "0.6",
+  "org.apache.opennlp" % "opennlp-tools" % "1.6.0",
+  "com.iheart" %% "ficus" % "1.2.0"
+)
+
+libraryDependencies ++= Seq(
+  "org.scalatest" %% "scalatest" % "2.2.6" % "test"
 )
 
 defaultScalariformSettings

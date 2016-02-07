@@ -4,6 +4,9 @@ import org.joda.time.DateTime
 import scala.concurrent.duration.{FiniteDuration, _}
 import scala.language.postfixOps
 
+/**
+  * Here there should be only share data model!!!
+  */
 object model {
 
   case class SchedulerParameters(
@@ -30,4 +33,21 @@ object model {
                     )
 
   case class GoogleNewsTerms(list: List[String])
+
+
+  case class Annotation(surfaceForm: String,
+                        dbpediaUrl: String,
+                        wikipediUrl: String,
+                        `types`: Seq[AnnotationType],
+                        offset: Int,
+                        support: Int
+                       )
+
+  /**
+    *
+    * Given a raw annotation of the type "DBpedia:Location,Schema:Place,DBpedia:Place,Wikidata:Q486972,DBpedia:PopulatedPlace"
+    * @param src the source of the annotation type, examples: DBPedia, Schema, Wikidata, DUL
+    * @param value the value of the annotation type, examples: Location, Place, PopulatedPlace
+    */
+  case class AnnotationType(src: String, value: String)
 }

@@ -97,16 +97,16 @@ object DBpediaUtils {
 
   def getTypes(json: JValue): List[AnnotationType] = {
     val cand = (json \ "@graph" \ "@type").values match {
-      case str: String => List(str)
       case list: List[String] => list
+      case str: String => List(str)
     }
     filter(cand)
   }
 
   def getOntologyClasses(json: JValue): List[AnnotationType] = {
     val cand = (json \ "@graph" \ "").values match {
-      case str: String => List(str)
       case list: List[String] => list
+      case str: String => List(str)
     }
     filter(cand)
   }

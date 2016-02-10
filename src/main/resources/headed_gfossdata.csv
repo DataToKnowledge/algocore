@@ -1,3 +1,4 @@
+id|istat_id|city_name|province_id|province_name|region_id|region_name|population|source_id|wikipedia_url|geoname_url|geo_location
 37|001037|Brozolo|001|Torino|001|Piemonte|435|2|||45.116952,8.071929
 49|001049|Campiglione-Fenile|001|Torino|001|Piemonte|1284|2|||44.802838,7.324219
 52|001052|Canischio|001|Torino|001|Piemonte|274|2|||45.374854,7.596214

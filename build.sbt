@@ -30,7 +30,10 @@ libraryDependencies ++= Seq(
   "com.github.crawler-commons" % "crawler-commons" % "0.6",
   "org.apache.opennlp" % "opennlp-tools" % "1.6.0",
   "com.iheart" %% "ficus" % "1.2.0",
-  "com.typesafe" % "config" % "1.3.0"
+  "com.typesafe" % "config" % "1.3.0",
+  "com.sksamuel.elastic4s" %% "elastic4s-core" % "2.2.0",
+  "com.sksamuel.elastic4s" %% "elastic4s-jackson" % "2.2.0",
+  "com.sksamuel.elastic4s" %% "elastic4s-streams" % "2.2.0"
 )
 
 libraryDependencies ++= Seq(

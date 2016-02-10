@@ -29,7 +29,8 @@ libraryDependencies ++= Seq(
   "com.github.nscala-time" %% "nscala-time" % "2.8.0",
   "com.github.crawler-commons" % "crawler-commons" % "0.6",
   "org.apache.opennlp" % "opennlp-tools" % "1.6.0",
-  "com.iheart" %% "ficus" % "1.2.0"
+  "com.iheart" %% "ficus" % "1.2.0",
+  "com.typesafe" % "config" % "1.3.0"
 )
 
 libraryDependencies ++= Seq(

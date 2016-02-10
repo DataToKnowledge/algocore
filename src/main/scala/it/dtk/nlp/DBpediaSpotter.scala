@@ -51,14 +51,6 @@ class DBpediaSpotter(baseUrl: String, lang: String) {
     }.getOrElse(List.empty[DbPediaTag])
   }
 
-  def annotationsFilter(raw: String): Seq[AnnotationType] = {
-    raw.split(",")
-      .filterNot(e => e.startsWith("http") || e.startsWith("DUL"))
-      .map(_.split(":"))
-      .filter(_.length == 2)
-      .map(array => AnnotationType(array(0), array(1)))
-  }
-
   /**
     *
     * @param text
@@ -72,7 +64,7 @@ class DBpediaSpotter(baseUrl: String, lang: String) {
         surfaceForm = tag.`@surfaceForm`,
         dbpediaUrl = tag.`@URI`,
         wikipediUrl = wikipediaBase + tag.`@surfaceForm`,
-        `types` = annotationsFilter(tag.`@types`),
+        `types` = DBpediaUtils.filter(tag.`@types`),
         offset = tag.`@offset`.toInt,
         support = tag.`@support`.toInt
       )
@@ -86,15 +78,37 @@ object DBpediaUtils {
 
   val http = HttpDownloader
 
+  val filters = "http" :: "DUL" :: "gml" :: Nil
+
+  def filter(raw: String): List[AnnotationType] =
+    filter(raw.split(",").toList)
+
+  def filter(list: List[String]): List[AnnotationType] = {
+    list.filterNot { e =>
+      filters.exists(p => e.contains(p))
+    }.map(_.split(":"))
+      .filter(_.length == 2)
+      .map(array => AnnotationType(array(0), array(1)))
+  }
+
   def getResource(url: String): Option[JValue] = {
     http.wget(url + jsonld).map(r => parse(r.body))
   }
 
-  def getTypes(json: JValue): List[String] = {
-    (json \ "@graph" \ "@type").values match {
+  def getTypes(json: JValue): List[AnnotationType] = {
+    val cand = (json \ "@graph" \ "@type").values match {
       case str: String => List(str)
       case list: List[String] => list
     }
+    filter(cand)
+  }
+
+  def getOntologyClasses(json: JValue): List[AnnotationType] = {
+    val cand = (json \ "@graph" \ "").values match {
+      case str: String => List(str)
+      case list: List[String] => list
+    }
+    filter(cand)
   }
 
   def getAbstract(json: JValue): String =
@@ -105,6 +119,22 @@ object DBpediaUtils {
     (json \ "@graph" \ "thumbnail").values.toString
 
 
-  def getCategory(json: JValue): String =
-    (json \ "@graph" \ "subject").values.toString
+  def getCategory(json: JValue): List[AnnotationType] = {
+    val cand = (json \ "@graph" \ "subject").values.toString
+    filter(cand)
+  }
+
+  def geoPoint(json: JValue): Option[Point] = {
+    val raw = (json \ "@graph" \ "georss:point").values
+
+    if (raw != None) {
+      raw.toString.split(" ") match {
+        case Array(lat, lon) =>
+          Some(Point(lat.toString.toDouble, lon.toString.toDouble))
+
+        case _ => None
+      }
+    } else None
+
+  }
 }

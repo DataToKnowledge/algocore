@@ -50,4 +50,6 @@ object model {
     * @param value the value of the annotation type, examples: Location, Place, PopulatedPlace
     */
   case class AnnotationType(src: String, value: String)
+
+  case class Point(lat: Double, long: Double)
 }

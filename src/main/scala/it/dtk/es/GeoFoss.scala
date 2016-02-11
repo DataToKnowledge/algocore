@@ -1,14 +1,15 @@
 package it.dtk.es
 
 import com.sksamuel.elastic4s.source.Indexable
-import com.sksamuel.elastic4s.{ElasticClient, ElasticsearchClientUri}
+import com.sksamuel.elastic4s.{RichSearchHit, HitAs, ElasticClient, ElasticsearchClientUri}
 import com.typesafe.config.{ConfigFactory, Config}
-import it.dtk.es.GeoFoss._
 import net.ceedubs.ficus.Ficus._
 import org.elasticsearch.common.settings.Settings
+import org.elasticsearch.index.query.MatchQueryBuilder
 import org.json4s._
 import org.json4s.jackson.Serialization
 import org.json4s.jackson.Serialization.write
+import org.json4s.jackson.JsonMethods._
 import com.sksamuel.elastic4s.ElasticDsl._
 
 import scala.io.Source
@@ -35,6 +36,9 @@ object GeoFoss {
   */
 class GeoFoss(config: Config) {
 
+  import GeoFoss._
+  import scala.concurrent.ExecutionContext.Implicits.global
+
   implicit val formats = Serialization.formats(NoTypeHints)
 
   implicit object LocationIndexable extends Indexable[Location] {
@@ -43,7 +47,7 @@ class GeoFoss(config: Config) {
 
   private val conf = config.getConfig("algocore.elasticsearch")
   private val hosts = conf.as[String]("hosts")
-  private val indexType = conf.as[String]("docs.location")
+  private val docPath = conf.as[String]("docs.location")
   private val clusterName = conf.as[String]("clusterName")
 
   val settings = Settings.settingsBuilder().put("cluster.name", clusterName).build()
@@ -53,7 +57,7 @@ class GeoFoss(config: Config) {
   def loadInitialData(): Unit = {
 
     val indexReq = loadCsv()
-      .map(l => index into indexType id l.id source l)
+      .map(l => index into docPath id l.id source l)
 
     indexReq
       .grouped(200)
@@ -62,6 +66,24 @@ class GeoFoss(config: Config) {
       }
   }
 
+  /**
+    *
+    * @param name
+    * @param maxCount
+    * @return a location by name
+    */
+  def findLocation(name: String, maxCount: Int = 1): Seq[Location] = {
+    val query = client.execute {
+      search in docPath limit maxCount query {
+        matchQuery("cityName", name).operator(MatchQueryBuilder.Operator.AND)
+      }
+    }
+
+    query.map { r =>
+      r.getHits.hits()
+        .map(s => parse(s.getSourceAsString).extract[Location])
+    }.await
+  }
 
   private def loadCsv(): Iterator[Location] = {
     val path = GeoFoss.getClass.getResource("/gfossdata.csv")

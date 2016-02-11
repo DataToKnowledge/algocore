@@ -29,7 +29,9 @@ object model {
                      publisher: String,
                      date: DateTime,
                      lang: String = "",
-                     cleanedText: String = ""
+                     cleanedText: String = "",
+                     annotations: List[Annotation] = List.empty,
+                     focusLocation: Option[Location] = None
                     )
 
   case class GoogleNewsTerms(list: List[String])
@@ -40,16 +42,29 @@ object model {
                         wikipediUrl: String,
                         `types`: Seq[AnnotationType],
                         offset: Int,
-                        support: Int
+                        support: Int,
+                        pin: Option[Pin] = None
                        )
 
   /**
     *
     * Given a raw annotation of the type "DBpedia:Location,Schema:Place,DBpedia:Place,Wikidata:Q486972,DBpedia:PopulatedPlace"
-    * @param src the source of the annotation type, examples: DBPedia, Schema, Wikidata, DUL
+    *
+    * @param src   the source of the annotation type, examples: DBPedia, Schema, Wikidata, DUL
     * @param value the value of the annotation type, examples: Location, Place, PopulatedPlace
     */
   case class AnnotationType(src: String, value: String)
 
-  case class Point(lat: Double, long: Double)
+  case class Location(id: Int,
+                      cityName: String,
+                      provinceId: Int,
+                      provinceName: String,
+                      regionId: Int,
+                      regionName: String,
+                      population: Int,
+                      pin: Pin
+                     )
+
+  case class Pin(lat: Double, long: Double)
+
 }

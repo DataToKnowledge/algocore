@@ -11,32 +11,14 @@ import org.json4s.jackson.Serialization
 import org.json4s.jackson.Serialization.write
 import org.json4s.jackson.JsonMethods._
 import com.sksamuel.elastic4s.ElasticDsl._
+import it.dtk.model._
 
 import scala.io.Source
-
-object GeoFoss {
-
-  case class Location(id: Int,
-                      cityName: String,
-                      provinceId: Int,
-                      provinceName: String,
-                      regionId: Int,
-                      regionName: String,
-                      population: Int,
-                      sourceId: Int,
-                      pin: Pin
-                     )
-
-  case class Pin(lat: Double, long: Double)
-
-}
 
 /**
   * Created by fabiofumarola on 08/02/16.
   */
 class GeoFoss(config: Config) {
-
-  import GeoFoss._
   import scala.concurrent.ExecutionContext.Implicits.global
 
   implicit val formats = Serialization.formats(NoTypeHints)
@@ -86,7 +68,8 @@ class GeoFoss(config: Config) {
   }
 
   private def loadCsv(): Iterator[Location] = {
-    val path = GeoFoss.getClass.getResource("/gfossdata.csv")
+
+    val path = this.getClass.getResource("/gfossdata.csv")
 
     val locations = Source.fromFile(path.getFile)
       .getLines()
@@ -104,7 +87,6 @@ class GeoFoss(config: Config) {
               regionId = regId.toInt,
               regionName = regName,
               population = pop.toInt,
-              sourceId = srcId.toInt,
               pin = geoLoc.split(",").map(l => Pin(l(0), l(1))).head
             )
         }

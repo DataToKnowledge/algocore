@@ -2,11 +2,18 @@ package it.dtk.nlp
 
 import it.dtk.HttpDownloader
 import it.dtk.model._
-import org.json4s.JsonAST.{JArray, JString, JValue}
+import org.json4s.JsonAST.JValue
 import org.json4s.jackson.JsonMethods._
 
+import scala.util.Try
 
-class DBpediaSpotter(baseUrl: String, lang: String) {
+/**
+  * Query a dbpedia spotlight service
+  *
+  * @param baseUrl
+  * @param lang
+  */
+class BBpediaSpotLight(baseUrl: String, lang: String) {
 
   case class DbPediaTag(`@URI`: String,
                         `@support`: String,
@@ -58,25 +65,62 @@ class DBpediaSpotter(baseUrl: String, lang: String) {
     * @return return text annotated as Seq[Annotation]
     */
   def annotateText(text: String, minConf: Float = 0.2F): Seq[Annotation] = {
-    tagText(text, minConf).map { tag =>
-
+    val annotations = tagText(text, minConf).map { tag =>
       Annotation(
         surfaceForm = tag.`@surfaceForm`,
         dbpediaUrl = tag.`@URI`,
         wikipediUrl = wikipediaBase + tag.`@surfaceForm`,
-        `types` = DBpediaUtils.filter(tag.`@types`),
+        `types` = DBpedia.filter(tag.`@types`),
         offset = tag.`@offset`.toInt,
         support = tag.`@support`.toInt
       )
     }
+    annotations.map(enrichAnnotation)
   }
+
+  /**
+    * @param a annotation
+    * @return other annotation extracted using DBpedia
+    */
+  def enrichAnnotation(a: Annotation): Annotation = {
+    Try {
+      val optJson = DBpedia.getResource(a.dbpediaUrl)
+
+      if (optJson.nonEmpty) {
+        val json = optJson.get
+
+        val extractedTypes = a.`types` ++ DBpedia.getTypes(json) ++
+          DBpedia.getOntologyClasses(json) ++
+          DBpedia.getCategory(json)
+
+        val pin = DBpedia.geoPoint(json)
+
+        a.copy(`types` = extractedTypes, pin = pin)
+      } else a
+
+    }.getOrElse(a)
+  }
+
 }
 
-object DBpediaUtils {
+/**
+  * Query dbpedia to extract additional annotations
+  * example of resource queried http://it.dbpedia.org/resource/Capurso/html?output=application%2Fld%2Bjson
+  */
+object DBpedia {
 
   val jsonld = "?output=application%2Fld%2Bjson"
 
   val http = HttpDownloader
+
+  /**
+    *
+    * @param dbpediaUrl
+    * @return
+    */
+  def getResource(dbpediaUrl: String): Option[JValue] = {
+    http.wget(dbpediaUrl + jsonld).map(r => parse(r.body))
+  }
 
   val filters = "http" :: "DUL" :: "gml" :: Nil
 
@@ -91,10 +135,11 @@ object DBpediaUtils {
       .map(array => AnnotationType(array(0), array(1)))
   }
 
-  def getResource(url: String): Option[JValue] = {
-    http.wget(url + jsonld).map(r => parse(r.body))
-  }
-
+  /**
+    *
+    * @param json
+    * @return the types extract from the dbpedia result
+    */
   def getTypes(json: JValue): List[AnnotationType] = {
     val cand = (json \ "@graph" \ "@type").values match {
       case list: List[String] => list
@@ -114,7 +159,6 @@ object DBpediaUtils {
   def getAbstract(json: JValue): String =
     (json \ "@graph" \ "abstract" \ "@value").values.toString
 
-
   def getThumbnail(json: JValue): String =
     (json \ "@graph" \ "thumbnail").values.toString
 
@@ -124,17 +168,16 @@ object DBpediaUtils {
     filter(cand)
   }
 
-  def geoPoint(json: JValue): Option[Point] = {
+  def geoPoint(json: JValue): Option[Pin] = {
     val raw = (json \ "@graph" \ "georss:point").values
 
     if (raw != None) {
       raw.toString.split(" ") match {
         case Array(lat, lon) =>
-          Some(Point(lat.toString.toDouble, lon.toString.toDouble))
+          Some(Pin(lat.toString.toDouble, lon.toString.toDouble))
 
         case _ => None
       }
     } else None
-
   }
 }

@@ -46,12 +46,9 @@ class GeoFoss(config: Config) {
   private val indexType = conf.as[String]("docs.location")
   private val clusterName = conf.as[String]("clusterName")
 
-  val settings = Settings.settingsBuilder()
-    .put("cluster.name", clusterName)
-    .build()
+  val settings = Settings.settingsBuilder().put("cluster.name", clusterName).build()
 
-  val client = ElasticClient.transport(settings,
-    ElasticsearchClientUri(s"elasticsearch://$hosts"))
+  val client = ElasticClient.transport(settings, ElasticsearchClientUri(s"elasticsearch://$hosts"))
 
   def loadInitialData(): Unit = {
 

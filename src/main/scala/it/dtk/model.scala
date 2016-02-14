@@ -36,6 +36,12 @@ object model {
 
   case class GoogleNewsTerms(list: List[String])
 
+  object DocumentSection extends Enumeration {
+    type DocumentSection = Value
+    val Title, Summary, Corpus, ToSet = Value
+  }
+
+  import DocumentSection._
 
   case class Annotation(surfaceForm: String,
                         dbpediaUrl: String,
@@ -43,8 +49,10 @@ object model {
                         `types`: Seq[AnnotationType],
                         offset: Int,
                         support: Int,
-                        pin: Option[Pin] = None
+                        pin: Option[Pin] = None,
+                        section: DocumentSection = DocumentSection.ToSet
                        )
+
 
   /**
     *

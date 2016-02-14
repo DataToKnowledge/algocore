@@ -13,7 +13,7 @@ import scala.util.Try
   * @param baseUrl
   * @param lang
   */
-class BBpediaSpotLight(baseUrl: String, lang: String) {
+class DBpediaSpotLight(baseUrl: String, lang: String) {
 
   case class DbPediaTag(`@URI`: String,
                         `@support`: String,

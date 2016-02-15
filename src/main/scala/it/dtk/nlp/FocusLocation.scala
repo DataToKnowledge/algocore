@@ -59,9 +59,12 @@ class FocusLocation(config: Config) {
       .filter(k => frequentLocations.contains(k._1))
       .map {
         case (loc, list) =>
-          val posScore = list.reduce((l1, l2) =>
-            l1.offset.toDouble + l2.offset) / textLength
-          loc -> posScore
+
+          val posScore = list
+            .map(_.offset.toDouble)
+            .sum
+
+          loc -> posScore / textLength
       }
 
     val lowestValue = scores.toSeq.sortBy(_._2).head._1

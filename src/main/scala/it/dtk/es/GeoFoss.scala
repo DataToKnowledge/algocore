@@ -1,17 +1,17 @@
 package it.dtk.es
 
+import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.source.Indexable
-import com.sksamuel.elastic4s.{RichSearchHit, HitAs, ElasticClient, ElasticsearchClientUri}
-import com.typesafe.config.{ConfigFactory, Config}
+import com.sksamuel.elastic4s.{ElasticClient, ElasticsearchClientUri}
+import com.typesafe.config.{Config, ConfigFactory}
+import it.dtk.model._
 import net.ceedubs.ficus.Ficus._
 import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.index.query.MatchQueryBuilder
 import org.json4s._
+import org.json4s.jackson.JsonMethods._
 import org.json4s.jackson.Serialization
 import org.json4s.jackson.Serialization.write
-import org.json4s.jackson.JsonMethods._
-import com.sksamuel.elastic4s.ElasticDsl._
-import it.dtk.model._
 
 import scala.io.Source
 

@@ -3,6 +3,7 @@ package it.dtk
 import org.joda.time.DateTime
 import scala.concurrent.duration.{FiniteDuration, _}
 import scala.language.postfixOps
+import java.util.Date
 
 /**
   * Here there should be only share data model!!!

@@ -10,16 +10,49 @@ import java.util.Date
   */
 object model {
 
-  case class SchedulerParameters(
-                                  time: FiniteDuration = 10 minutes,
-                                  delta: FiniteDuration = 2 minutes)
+  case class SchedulerData(nextRange: FiniteDuration = 30 minutes,
+                           deltaRange: FiniteDuration = 5 minutes,
+                           time: DateTime = DateTime.now)
 
+  /**
+    * helper companion object to setup the next schedule
+    */
+  object SchedulerData {
+    def next(scheduler: SchedulerData, extractedUrls: Int) = {
+      val now = DateTime.now
+      extractedUrls match {
+        case 0 =>
+          val nextRange = scheduler.nextRange + scheduler.deltaRange
+          val time = now plus nextRange.toMillis
+          scheduler.copy(nextRange = nextRange, time = time)
+
+        case x if x < 5 =>
+          scheduler.copy(time = now plus scheduler.nextRange.toMillis)
+
+        case x if x > 5 =>
+          val nextRange = if (scheduler.nextRange > 5.minutes) {
+            scheduler.nextRange - scheduler.deltaRange
+          } else scheduler.nextRange
+          scheduler.copy(nextRange = nextRange, time = now plus nextRange.toMillis)
+      }
+    }
+  }
+
+  /**
+    *
+    * @param url is the id for the feed
+    * @param publisher
+    * @param parsedUrls
+    * @param lastTime
+    * @param count
+    * @param schedulerData
+    */
   case class Feed(url: String,
                   publisher: String,
                   parsedUrls: List[String],
                   lastTime: Option[DateTime],
                   count: Long = 0,
-                  schedulerParams: SchedulerParameters = SchedulerParameters())
+                  schedulerData: SchedulerData = SchedulerData())
 
   case class Article(uri: String,
                      title: String,

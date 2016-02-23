@@ -22,29 +22,6 @@ import scala.concurrent.duration._
 import scala.language.postfixOps
 import scala.util.Try
 
-
-object FeedSourceScheduler {
-
-  val minTime: FiniteDuration = 4 minutes
-
-  def gotException(f: SchedulerParameters): SchedulerParameters =
-    f.copy(time = f.time * 2)
-
-  def when(f: SchedulerParameters, numUrls: Int): SchedulerParameters = numUrls match {
-    case -1 => f
-    case x: Int if x >= 5 =>
-      val nextTime = if (f.time < minTime)
-        minTime
-      else f.time - minTime
-
-      f.copy(time = nextTime)
-
-    case x: Int if x < 5 =>
-      val nextTime = f.time + f.delta
-      f.copy(time = nextTime)
-  }
-}
-
 /**
   * Extract feed usig Rome
   */

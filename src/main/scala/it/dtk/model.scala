@@ -20,6 +20,8 @@ object model {
                   count: Long = 0,
                   schedulerParams: SchedulerParameters = SchedulerParameters())
 
+  case class GoogleNewsQuery(terms: List[String], timestamp: DateTime)
+
   case class Article(uri: String,
                      title: String,
                      description: String,

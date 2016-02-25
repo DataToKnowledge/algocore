@@ -30,7 +30,7 @@ object HttpDownloader {
     * @param url the url to retrieve
     * @return get a future to the url using Play WS
     */
-  def wget(url: String, timeout: FiniteDuration = 10.seconds): Option[WSResponse] =
+  def wget(url: String, timeout: FiniteDuration = 5.seconds): Option[WSResponse] =
     try {
       val req = ws.url(url).withFollowRedirects(true).get()
       Some(Await.result(req, timeout))

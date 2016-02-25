@@ -33,7 +33,8 @@ libraryDependencies ++= Seq(
   "com.typesafe" % "config" % "1.3.0",
   "com.sksamuel.elastic4s" %% "elastic4s-core" % "2.2.0",
   "com.sksamuel.elastic4s" %% "elastic4s-jackson" % "2.2.0",
-  "com.sksamuel.elastic4s" %% "elastic4s-streams" % "2.2.0"
+  "com.sksamuel.elastic4s" %% "elastic4s-streams" % "2.2.0",
+  "org.apache.kafka" % "kafka-clients" % "0.9.0.1"
 )
 
 libraryDependencies ++= Seq(

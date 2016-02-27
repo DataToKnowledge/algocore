@@ -89,6 +89,10 @@ class GeoFoss(hosts: String, docPath: String, clusterName: String) {
       }
     locations
   }
+
+  def close(): Unit = {
+    client.close()
+  }
 }
 
 object GFossIndexerMain extends App {

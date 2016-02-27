@@ -54,7 +54,10 @@ object model {
                   count: Long = 0,
                   schedulerData: SchedulerData = SchedulerData())
 
-  case class QueryTerm(terms: List[String], timestamp: DateTime)
+  case class QueryTerm(
+                        terms: List[String],
+                        lang: String = "it",
+                        timestamp: Option[DateTime] = Some(DateTime.now().minusMinutes(10)))
 
   case class Article(uri: String,
                      title: String,

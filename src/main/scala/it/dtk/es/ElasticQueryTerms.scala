@@ -39,6 +39,11 @@ class ElasticQueryTerms(hosts: String, indexPath: String, clusterName: String) {
     client.execute(req)
   }
 
+  def bulkCreateUpdate(seq: Seq[QueryTerm])(implicit ex: ExecutionContext): Future[BulkResult] = {
+    val req = seq.map(q => index into indexPath id q.terms.mkString("_") source q)
+    client.execute(bulk(req))
+  }
+
   /**
     *
     * @param fromIndex
@@ -50,5 +55,25 @@ class ElasticQueryTerms(hosts: String, indexPath: String, clusterName: String) {
   def listQueryTerms(fromIndex: Int = 0, sizeRes: Int = 10)(implicit ex: ExecutionContext): Future[Seq[QueryTerm]] = {
     val req = search in indexPath query matchAllQuery from fromIndex size sizeRes
     client.execute(req).map(_.as[QueryTerm])
+  }
+
+  def close(): Unit = {
+    client.close()
+  }
+}
+
+object ElasticQueryTerms {
+
+  private var pool: Option[ElasticQueryTerms] = None
+
+  def connection(hosts: String, indexPath: String, clusterName: String): ElasticQueryTerms = {
+    if (pool.isEmpty) {
+      pool = Some(new ElasticQueryTerms(hosts, indexPath, clusterName))
+    }
+    pool.get
+  }
+
+  override def finalize(): Unit = {
+    pool.foreach(_.close())
   }
 }

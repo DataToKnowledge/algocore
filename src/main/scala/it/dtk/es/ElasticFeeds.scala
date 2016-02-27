@@ -46,4 +46,8 @@ class ElasticFeeds(hosts: String, indexPath: String, clusterName: String) {
     val req = index into indexPath id feed.url source feed
     client.execute(req)
   }
+
+  def close(): Unit = {
+    client.close()
+  }
 }

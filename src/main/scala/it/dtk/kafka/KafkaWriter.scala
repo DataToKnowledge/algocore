@@ -7,12 +7,13 @@ import org.apache.kafka.clients.consumer.{ConsumerConfig, ConsumerRecords, Kafka
 import org.apache.kafka.clients.producer.{RecordMetadata, ProducerRecord, KafkaProducer}
 import org.apache.kafka.common.TopicPartition
 import collection.JavaConversions._
+import scala.collection.mutable
 
 /**
   *
   * @param brokers     This list should be in the form host1:port1,host2:port2
   * @param topic       name of the topic for the quee
-  * @param groupName
+  * @param clientId
   * @param keySer      Serializer class for key that implements the Serializer interface.
   *                    org.apache.kafka.common.serialization.StringSerializer or org.apache.kafka.common.serialization.ByteArraySerializer
   * @param valueSer    Serializer class for value that implements the Serializer interface.
@@ -24,7 +25,7 @@ import collection.JavaConversions._
 case class ProducerProperties(
                                brokers: String,
                                topic: String,
-                               groupName: String,
+                               clientId: String,
                                keySer: String = "org.apache.kafka.common.serialization.ByteArraySerializer",
                                valueSer: String = "org.apache.kafka.common.serialization.ByteArraySerializer",
                                ack: String = "1",
@@ -35,15 +36,13 @@ case class ProducerProperties(
   def props(): Properties = {
     val props = new Properties()
     props.put("bootstrap.servers", brokers)
-    props.put("topic", topic)
-    props.put("group.id", groupName + "Prod")
+    props.put("client.id", clientId + "Prod")
     props.put("key.serializer", keySer)
     props.put("value.serializer", valueSer)
-    props.put("ack", ack)
-    props.put("linger.ms", 1.toString)
+    //    props.put("linger.ms", 1.toString)
     props.put("compression.type", "snappy")
-    props.put("retries", retries.toString)
-    props.put("batch.size", batchSize.toString)
+    //    props.put("retries", retries.toString)
+    //    props.put("batch.size", batchSize.toString)
     props
   }
 }
@@ -57,6 +56,23 @@ class KafkaWriter[K, V](val prodPros: ProducerProperties) {
   def send(key: K, value: V): Future[RecordMetadata] = {
     val msg = new ProducerRecord[K, V](prodPros.topic, key, value)
     producer.send(msg)
+  }
+
+  def close(): Unit = {
+    producer.close()
+  }
+}
+
+object KafkaWriter {
+
+  private val pool = mutable.Map.empty[ProducerProperties, KafkaWriter[Array[Byte], Array[Byte]]]
+
+  def getConnection(props: ProducerProperties) = {
+    pool.getOrElseUpdate(props, new KafkaWriter[Array[Byte], Array[Byte]](props))
+  }
+
+  override def finalize(): Unit = {
+    pool.values.foreach(_.close())
   }
 }
 
@@ -106,7 +122,7 @@ class KafkaReader[K, V](val consProps: ConsumerProperties) {
 
 object Main extends App {
 
-//  ConsumerConfig.main(Array.empty)
+  //  ConsumerConfig.main(Array.empty)
 
   val consProps = ConsumerProperties(
     brokers = "192.168.99.100:9092",
@@ -131,12 +147,15 @@ object Main extends App {
   //  val res = cons.poll(1)
 
   //  if (res.count() == 0){
-  cons.seekToBeginning(new TopicPartition(consProps.topics, 0))
+//  cons.seekToBeginning(new TopicPartition(consProps.topics, 0))
   //  }
 
   while (true) {
     val res = reader.consume()
-    res.foreach(println)
+    res.foreach{ r =>
+      println(new String(r.key()))
+      print(new String(r.value()))
+    }
   }
 
   reader.consumer.close()

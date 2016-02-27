@@ -23,6 +23,7 @@ class ElasticFeeds(hosts: String, indexPath: String, clusterName: String) {
 
   val client = ElasticClient.transport(settings, ElasticsearchClientUri(s"elasticsearch://$hosts"))
 
+
   implicit object FeedHitAs extends HitAs[Feed] {
     override def as(hit: RichSearchHit): Feed = {
       parse(hit.getSourceAsString).extract[Feed]

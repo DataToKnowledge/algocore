@@ -105,7 +105,7 @@ object GanderHelper {
 
   def extract(html: String) = Gander.extract(html)
 
-  def extend(art: Article): Article = {
+  def mainContent(art: Article): Article = {
     val webResponse = HttpDownloader.wget(art.uri)
     webResponse
       .map(ws => Try(ws.body))

@@ -18,7 +18,8 @@ import scala.io.Source
 /**
   * Created by fabiofumarola on 08/02/16.
   */
-class GeoFoss(config: Config) {
+class GeoFoss(hosts: String, docPath: String, clusterName: String) {
+
   import scala.concurrent.ExecutionContext.Implicits.global
 
   implicit val formats = Serialization.formats(NoTypeHints)
@@ -27,12 +28,7 @@ class GeoFoss(config: Config) {
     override def json(l: Location): String = write(l)
   }
 
-  private val conf = config.getConfig("algocore.elasticsearch")
-  private val hosts = conf.as[String]("hosts")
-  private val docPath = conf.as[String]("docs.location")
-  private val clusterName = conf.as[String]("clusterName")
-
-  val settings = Settings.settingsBuilder().put("cluster.name", clusterName).build()
+  private val settings = Settings.settingsBuilder().put("cluster.name", clusterName).build()
 
   val client = ElasticClient.transport(settings, ElasticsearchClientUri(s"elasticsearch://$hosts"))
 
@@ -97,6 +93,11 @@ class GeoFoss(config: Config) {
 
 object GFossIndexerMain extends App {
   val config = ConfigFactory.load("mac_dev.conf")
-  val gfoss = new GeoFoss(config)
+  private val conf = config.getConfig("algocore.elasticsearch")
+  private val hosts = conf.as[String]("hosts")
+  private val docPath = conf.as[String]("docs.location")
+  private val clusterName = conf.as[String]("clusterName")
+
+  val gfoss = new GeoFoss(hosts, docPath, clusterName)
   gfoss.loadInitialData()
 }

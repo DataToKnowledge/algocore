@@ -9,9 +9,9 @@ import scala.util.Try
 /**
   * Created by fabiofumarola on 11/02/16.
   */
-class FocusLocation(config: Config) {
+class FocusLocation(hosts: String, docPath: String, clusterName: String) {
 
-  val gfoss = new GeoFoss(config)
+  val gfoss = new GeoFoss(hosts, docPath, clusterName)
   val locationConsts = List("PopulatedPlace", "Place")
 
   def isLocation(a: Annotation): Boolean = {

@@ -34,13 +34,13 @@ class ElasticFeeds(hosts: String, indexPath: String, clusterName: String) {
     override def json(t: Feed): String = write(t)
   }
 
-  def feedsFuture(fromIndex: Int = 0, sizeRes: Int = 10)(implicit ex: ExecutionContext): Future[Seq[Feed]] = {
+  def listFeedsFuture(fromIndex: Int = 0, sizeRes: Int = 10)(implicit ex: ExecutionContext): Future[Seq[Feed]] = {
     val req = search in indexPath query matchAllQuery from fromIndex size sizeRes
     client.execute(req).map(_.as[Feed])
   }
 
-  def feeds(fromIndex: Int = 0, sizeRes: Int = 10)(implicit ex: ExecutionContext): Seq[Feed] =
-    feedsFuture(fromIndex, sizeRes).await
+  def listFeeds(fromIndex: Int = 0, sizeRes: Int = 10)(implicit ex: ExecutionContext): Seq[Feed] =
+    listFeedsFuture(fromIndex, sizeRes).await
 
   def createOrUpdate(feed: Feed)(implicit ex: ExecutionContext): Future[IndexResult] = {
     val req = index into indexPath id feed.url source feed

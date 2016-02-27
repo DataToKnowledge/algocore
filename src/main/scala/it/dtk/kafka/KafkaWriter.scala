@@ -3,8 +3,9 @@ package it.dtk.kafka
 import java.util.Properties
 import java.util.concurrent.Future
 
-import org.apache.kafka.clients.consumer.{ConsumerRecords, KafkaConsumer}
+import org.apache.kafka.clients.consumer.{ConsumerConfig, ConsumerRecords, KafkaConsumer}
 import org.apache.kafka.clients.producer.{RecordMetadata, ProducerRecord, KafkaProducer}
+import org.apache.kafka.common.TopicPartition
 import collection.JavaConversions._
 
 /**
@@ -97,7 +98,46 @@ class KafkaReader[K, V](val consProps: ConsumerProperties) {
     consumer.poll(timeout)
   }
 
-  override def finalize(): Unit ={
+  override def finalize(): Unit = {
     consumer.close()
   }
+}
+
+
+object Main extends App {
+
+//  ConsumerConfig.main(Array.empty)
+
+  val consProps = ConsumerProperties(
+    brokers = "192.168.99.100:9092",
+    topics = "feed_items",
+    groupName = "feed_items"
+  )
+
+  val reader = new KafkaReader[Array[Byte], Array[Byte]](consProps)
+  val cons = reader.consumer
+
+  val ass = cons.assignment()
+
+  println(ass)
+
+  val topics = cons.listTopics()
+
+  println(topics)
+
+  println(cons.assignment())
+
+
+  //  val res = cons.poll(1)
+
+  //  if (res.count() == 0){
+  cons.seekToBeginning(new TopicPartition(consProps.topics, 0))
+  //  }
+
+  while (true) {
+    val res = reader.consume()
+    res.foreach(println)
+  }
+
+  reader.consumer.close()
 }

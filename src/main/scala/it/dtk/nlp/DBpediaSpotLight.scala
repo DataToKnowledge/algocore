@@ -1,11 +1,22 @@
 package it.dtk.nlp
 
 import it.dtk.HttpDownloader
+import it.dtk.model.DocumentSection.DocumentSection
 import it.dtk.model._
 import org.json4s.JsonAST.JValue
 import org.json4s.jackson.JsonMethods._
-
+import play.api.libs.json._
+import scala.collection.mutable
 import scala.util.Try
+
+case class DbPediaTag(`@URI`: String,
+                      `@support`: String,
+                      `@types`: String,
+                      `@surfaceForm`: String,
+                      `@offset`: String,
+                      `@similarityScore`: String,
+                      `@percentageOfSecondRank`: String
+                     )
 
 /**
   * Query a dbpedia spotlight service
@@ -13,16 +24,7 @@ import scala.util.Try
   * @param baseUrl
   * @param lang
   */
-class DBpediaSpotLight(baseUrl: String, lang: String) {
-
-  case class DbPediaTag(`@URI`: String,
-                        `@support`: String,
-                        `@types`: String,
-                        `@surfaceForm`: String,
-                        `@offset`: String,
-                        `@similarityScore`: String,
-                        `@percentageOfSecondRank`: String
-                       )
+class DBpediaSpotLight(val baseUrl: String, val lang: String) {
 
   val serviceUrl = s"$baseUrl/rest/annotate"
 
@@ -37,7 +39,7 @@ class DBpediaSpotLight(baseUrl: String, lang: String) {
     case _ => "https://en.wikipedia.org/wiki/"
   }
 
-  implicit val formats = org.json4s.DefaultFormats ++ org.json4s.ext.JodaTimeSerializers.all
+  implicit val formats = org.json4s.DefaultFormats
 
   /**
     *
@@ -46,17 +48,39 @@ class DBpediaSpotLight(baseUrl: String, lang: String) {
     * @return the text annotated with the dbpedia spotlight reources
     */
   def tagText(text: String, minConf: Float = 0.15F): Seq[DbPediaTag] = {
+    val parameters = Map(
+      "text" -> Seq(text),
+      "confidence" -> Seq(minConf.toString)
+    )
+
+    http.wPost(serviceUrl, headers, parameters).flatMap { res =>
+      Try {
+        val json = parse(res.body)
+        (json \ "Resources").extract[List[DbPediaTag]]
+      }.recover {
+        case ex: Exception =>
+          println(res.body)
+          println(text)
+
+          List.empty[DbPediaTag]
+      }.toOption
+    }.getOrElse(List.empty[DbPediaTag])
+  }
+
+  def playTagText(text: String, minConf: Float = 0.15F): Seq[DbPediaTag] = {
 
     val parameters = Map(
       "text" -> Seq(text),
       "confidence" -> Seq(minConf.toString)
     )
 
+    implicit val tagReads = Json.reads[DbPediaTag]
+
     http.wPost(serviceUrl, headers, parameters).map { res =>
-      val json = parse(res.body)
-      (json \ "Resources").extract[List[DbPediaTag]]
+      (res.json \ "Resources").validate[List[DbPediaTag]].get
     }.getOrElse(List.empty[DbPediaTag])
   }
+
 
   /**
     *
@@ -64,26 +88,28 @@ class DBpediaSpotLight(baseUrl: String, lang: String) {
     * @param minConf
     * @return return text annotated as Seq[Annotation]
     */
-  def annotateText(text: String, minConf: Float = 0.2F): Seq[Annotation] = {
+  def annotateText(text: String, section: DocumentSection, minConf: Float = 0.15F): Seq[Annotation] = {
     val annotations = tagText(text, minConf).map { tag =>
       Annotation(
         surfaceForm = tag.`@surfaceForm`,
         dbpediaUrl = tag.`@URI`,
         wikipediUrl = wikipediaBase + tag.`@surfaceForm`,
-        `types` = DBpedia.filter(tag.`@types`),
+        `types` = DBpedia.filter(tag.`@types`).distinct,
         offset = tag.`@offset`.toInt,
         support = tag.`@support`.toInt
       )
     }
-    annotations.map(enrichAnnotation)
+    annotations
+      .filterNot(a => StopWords.isStopWord(a.surfaceForm))
+      .map(enrichAnnotation)
   }
 
   /**
     * @param a annotation
-    * @return other annotation extracted using DBpedia
+    * @return other annotation extracted using DBpedia website
     */
   def enrichAnnotation(a: Annotation): Annotation = {
-    Try {
+    val t = Try {
       val optJson = DBpedia.getResource(a.dbpediaUrl)
 
       if (optJson.nonEmpty) {
@@ -95,12 +121,21 @@ class DBpediaSpotLight(baseUrl: String, lang: String) {
 
         val pin = DBpedia.geoPoint(json)
 
-        a.copy(`types` = extractedTypes, pin = pin)
+        a.copy(`types` = extractedTypes.distinct, pin = pin)
       } else a
 
-    }.getOrElse(a)
+    }
+
+    //    if (t.isFailure) {
+    //      t.failed.get.printStackTrace()
+    //    }
+
+    t.getOrElse(a)
   }
 
+  def close(): Unit = {
+    http.close()
+  }
 }
 
 /**
@@ -108,6 +143,16 @@ class DBpediaSpotLight(baseUrl: String, lang: String) {
   * example of resource queried http://it.dbpedia.org/resource/Capurso/html?output=application%2Fld%2Bjson
   */
 object DBpedia {
+
+  private val pool = mutable.Map.empty[String, DBpediaSpotLight]
+
+  def getConnection(baseUrl: String, lang: String): DBpediaSpotLight = {
+    pool.getOrElseUpdate(baseUrl, new DBpediaSpotLight(baseUrl, lang))
+  }
+
+  def closePool(): Unit = {
+    pool.values.foreach(_.close())
+  }
 
   val jsonld = "?output=application%2Fld%2Bjson"
 

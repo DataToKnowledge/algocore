@@ -1,9 +1,9 @@
 package it.dtk
 
 import org.joda.time.DateTime
+
 import scala.concurrent.duration.{FiniteDuration, _}
 import scala.language.postfixOps
-import java.util.Date
 
 /**
   * Here there should be only share data model!!!
@@ -54,6 +54,8 @@ object model {
                   count: Long = 0,
                   schedulerData: SchedulerData = SchedulerData())
 
+  case class Follower(screenName: String, twitterUserId: String)
+
   case class QueryTerm(
                         terms: List[String],
                         lang: String = "it",
@@ -75,7 +77,7 @@ object model {
 
   object DocumentSection extends Enumeration {
     type DocumentSection = Value
-    val Title, Summary, Corpus, NotSet = Value
+    val Title, Summary, Corpus, KeyWords, NotSet = Value
   }
 
   import DocumentSection._
@@ -87,7 +89,7 @@ object model {
                         offset: Int,
                         support: Int,
                         pin: Option[Pin] = None,
-                        section: DocumentSection = DocumentSection.NotSet
+                        section: String = DocumentSection.NotSet.toString
                        )
 
 
@@ -111,5 +113,9 @@ object model {
                      )
 
   case class Pin(lat: Double, long: Double)
+
+  case class Tweet(
+                    id: String
+                  )
 
 }

@@ -1,9 +1,9 @@
 package it.dtk
 
 import org.joda.time.DateTime
+
 import scala.concurrent.duration.{FiniteDuration, _}
 import scala.language.postfixOps
-import java.util.Date
 
 /**
   * Here there should be only share data model!!!
@@ -53,6 +53,8 @@ object model {
                   lastTime: Option[DateTime],
                   count: Long = 0,
                   schedulerData: SchedulerData = SchedulerData())
+
+  case class Follower(screenName: String, twitterUserId: String)
 
   case class QueryTerm(
                         terms: List[String],

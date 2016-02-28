@@ -182,7 +182,7 @@ object HtmlHelper {
 /**
   * Used to find news based on term queries
   */
-object AjaxGoogleNews {
+object QueryTermsSearch {
 
   import java.text.SimpleDateFormat
 

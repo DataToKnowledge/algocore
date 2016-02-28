@@ -54,7 +54,10 @@ object model {
                   count: Long = 0,
                   schedulerData: SchedulerData = SchedulerData())
 
-  case class GoogleNewsQuery(terms: List[String], timestamp: DateTime)
+  case class QueryTerm(
+                        terms: List[String],
+                        lang: String = "it",
+                        timestamp: Option[DateTime] = Some(DateTime.now().minusMinutes(10)))
 
   case class Article(uri: String,
                      title: String,
@@ -70,11 +73,9 @@ object model {
                      focusLocation: Option[Location] = None
                     )
 
-  case class GoogleNewsTerms(list: List[String])
-
   object DocumentSection extends Enumeration {
     type DocumentSection = Value
-    val Title, Summary, Corpus, ToSet = Value
+    val Title, Summary, Corpus, NotSet = Value
   }
 
   import DocumentSection._
@@ -86,7 +87,7 @@ object model {
                         offset: Int,
                         support: Int,
                         pin: Option[Pin] = None,
-                        section: DocumentSection = DocumentSection.ToSet
+                        section: DocumentSection = DocumentSection.NotSet
                        )
 
 

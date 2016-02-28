@@ -6,9 +6,10 @@ from elasticsearch import helpers
 # import argparse
 
 class QueryTerm():
-    def __init__(self, terms):
+    def __init__(self, terms, lang = 'it'):
         self.terms = terms
         self.timestamp = datetime.now()
+        self.lang = lang
 
 class QueryTermsIndexer():
     def __init__(self, nodes, index, doc_type):

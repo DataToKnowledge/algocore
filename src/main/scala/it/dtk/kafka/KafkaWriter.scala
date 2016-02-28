@@ -117,6 +117,10 @@ class KafkaReader[K, V](val consProps: ConsumerProperties) {
   override def finalize(): Unit = {
     consumer.close()
   }
+
+  def close(): Unit ={
+    consumer.close()
+  }
 }
 
 

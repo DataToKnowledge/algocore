@@ -20,6 +20,7 @@ class QueryTermsIndexer():
         return {
             '_index': self.index,
             '_type': self.doc_type,
+            '_id': "_".join(terms),
             '_source': QueryTerm(terms).__dict__
         }
 

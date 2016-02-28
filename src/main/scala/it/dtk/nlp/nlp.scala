@@ -5,6 +5,8 @@ import opennlp.tools.sentdetect.{SentenceDetectorME, SentenceModel}
 import opennlp.tools.tokenize.{TokenizerME, TokenizerModel}
 import opennlp.tools.util.Span
 
+import scala.io.Source
+
 object nlp {
   val it = "it"
 
@@ -88,3 +90,11 @@ class PosTagger(lang: String) {
   }
 }
 
+object StopWords {
+
+  val stopwords = Source.fromInputStream(StopWords.getClass.getResourceAsStream("/stopwords.txt"))
+    .getLines().toSet
+
+  def isStopWord(word: String): Boolean =
+    stopwords.contains(word)
+}

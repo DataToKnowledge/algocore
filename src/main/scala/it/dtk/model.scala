@@ -75,7 +75,7 @@ object model {
 
   object DocumentSection extends Enumeration {
     type DocumentSection = Value
-    val Title, Summary, Corpus, NotSet = Value
+    val Title, Summary, Corpus, KeyWords, NotSet = Value
   }
 
   import DocumentSection._
@@ -87,7 +87,7 @@ object model {
                         offset: Int,
                         support: Int,
                         pin: Option[Pin] = None,
-                        section: DocumentSection = DocumentSection.NotSet
+                        section: String = DocumentSection.NotSet.toString
                        )
 
 

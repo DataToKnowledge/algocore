@@ -112,4 +112,8 @@ object model {
 
   case class Pin(lat: Double, long: Double)
 
+  case class Tweet(
+                    id: String
+                  )
+
 }

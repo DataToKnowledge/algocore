@@ -110,7 +110,7 @@ class KafkaReader[K, V](val consProps: ConsumerProperties) {
     *
     * @return
     */
-  def consume(timeout: Long = 100): ConsumerRecords[K, V] = {
+  def poll(timeout: Long = 100): ConsumerRecords[K, V] = {
     consumer.poll(timeout)
   }
 
@@ -118,7 +118,7 @@ class KafkaReader[K, V](val consProps: ConsumerProperties) {
     consumer.close()
   }
 
-  def close(): Unit ={
+  def close(): Unit = {
     consumer.close()
   }
 }
@@ -147,16 +147,15 @@ object Main extends App {
 
   println(cons.assignment())
 
+  val res = cons.poll(1)
 
-  //  val res = cons.poll(1)
-
-  //  if (res.count() == 0){
-//  cons.seekToBeginning(new TopicPartition(consProps.topics, 0))
-  //  }
+  if (res.count() == 0) {
+    cons.seekToBeginning(new TopicPartition(consProps.topics, 0))
+  }
 
   while (true) {
-    val res = reader.consume()
-    res.foreach{ r =>
+    val res = reader.poll()
+    res.foreach { r =>
       println(new String(r.key()))
       print(new String(r.value()))
     }

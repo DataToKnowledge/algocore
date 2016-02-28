@@ -46,8 +46,8 @@ object RomeFeedHelper {
 
       Article(
         uri = uri,
-        title = e.getTitle,
-        description = description,
+        title = HtmlHelper.text(e.getTitle),
+        description = HtmlHelper.text(description),
         keywords = keywords,
         publisher = publisher,
         categories = e.getCategories.map(_.getName).toList,

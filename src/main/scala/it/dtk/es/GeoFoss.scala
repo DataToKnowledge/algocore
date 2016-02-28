@@ -9,6 +9,7 @@ import net.ceedubs.ficus.Ficus._
 import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.index.query.MatchQueryBuilder
 import org.json4s._
+import org.json4s.ext.JodaTimeSerializers
 import org.json4s.jackson.JsonMethods._
 import org.json4s.jackson.Serialization
 import org.json4s.jackson.Serialization.write
@@ -22,7 +23,7 @@ class GeoFoss(hosts: String, docPath: String, clusterName: String) {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  implicit val formats = Serialization.formats(NoTypeHints)
+  implicit val formats = Serialization.formats(NoTypeHints) ++ JodaTimeSerializers.all
 
   implicit object LocationIndexable extends Indexable[Location] {
     override def json(l: Location): String = write(l)

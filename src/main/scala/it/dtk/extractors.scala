@@ -8,6 +8,7 @@ import java.util.Locale
 import com.intenthq.gander.Gander
 import com.rometools.rome.io.{SyndFeedInput, XmlReader}
 import it.dtk.model._
+import it.dtk.nlp.StopWords
 import org.apache.tika.language.LanguageIdentifier
 import org.apache.tika.metadata.Metadata
 import org.apache.tika.parser.html.HtmlParser
@@ -43,6 +44,7 @@ object RomeFeedHelper {
 
       val uri = e.getUri.substring(index, e.getUri.length)
       val keywords = HtmlHelper.urlTags(uri)
+        .filterNot(w => StopWords.isStopWord(w))
 
       Article(
         uri = uri,
@@ -120,9 +122,12 @@ object GanderHelper {
         val date = page.publishDate
           .map(d => new DateTime(d.getTime)).getOrElse(art.date)
 
+        val metaKeywords = page.metaKeywords.split("[,\\s]+").filter(_.length > 0)
+          .filterNot(w => StopWords.isStopWord(w))
+
         art.copy(
           description = description,
-          keywords = art.keywords ++ page.metaKeywords.split("[,\\s]+").filter(_.length > 0),
+          keywords = art.keywords ++ metaKeywords,
           date = date,
           lang = page.lang.getOrElse(""),
           cleanedText = page.cleanedText.getOrElse("")

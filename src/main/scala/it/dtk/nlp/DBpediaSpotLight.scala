@@ -100,7 +100,7 @@ class DBpediaSpotLight(val baseUrl: String, val lang: String) {
       )
     }
     annotations
-      .filter(a => StopWords.isStopWord(a.surfaceForm))
+      .filterNot(a => StopWords.isStopWord(a.surfaceForm))
       .map(enrichAnnotation)
   }
 

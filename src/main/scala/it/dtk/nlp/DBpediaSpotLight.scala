@@ -1,6 +1,7 @@
 package it.dtk.nlp
 
 import it.dtk.HttpDownloader
+import it.dtk.model.DocumentSection.DocumentSection
 import it.dtk.model._
 import org.json4s.JsonAST.JValue
 import org.json4s.jackson.JsonMethods._
@@ -53,10 +54,10 @@ class DBpediaSpotLight(val baseUrl: String, val lang: String) {
     )
 
     http.wPost(serviceUrl, headers, parameters).flatMap { res =>
-      Try{
+      Try {
         val json = parse(res.body)
         (json \ "Resources").extract[List[DbPediaTag]]
-      }.recover{
+      }.recover {
         case ex: Exception =>
           println(res.body)
           println(text)
@@ -87,7 +88,7 @@ class DBpediaSpotLight(val baseUrl: String, val lang: String) {
     * @param minConf
     * @return return text annotated as Seq[Annotation]
     */
-  def annotateText(text: String, minConf: Float = 0.15F): Seq[Annotation] = {
+  def annotateText(text: String, section: DocumentSection, minConf: Float = 0.15F): Seq[Annotation] = {
     val annotations = tagText(text, minConf).map { tag =>
       Annotation(
         surfaceForm = tag.`@surfaceForm`,
@@ -98,7 +99,9 @@ class DBpediaSpotLight(val baseUrl: String, val lang: String) {
         support = tag.`@support`.toInt
       )
     }
-    annotations.map(enrichAnnotation)
+    annotations
+      .filter(a => StopWords.isStopWord(a.surfaceForm))
+      .map(enrichAnnotation)
   }
 
   /**
@@ -145,6 +148,10 @@ object DBpedia {
 
   def getConnection(baseUrl: String, lang: String): DBpediaSpotLight = {
     pool.getOrElseUpdate(baseUrl, new DBpediaSpotLight(baseUrl, lang))
+  }
+
+  def closePool(): Unit = {
+    pool.values.foreach(_.close())
   }
 
   val jsonld = "?output=application%2Fld%2Bjson"

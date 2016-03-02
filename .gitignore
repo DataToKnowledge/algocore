@@ -24,3 +24,4 @@ notebooks/.ipynb_checkpoints
 __pycache__
 
 dockerfile/
+src/main/resources/models

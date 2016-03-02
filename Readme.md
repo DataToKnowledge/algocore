@@ -13,3 +13,7 @@ this project contains:
 ```
 
 to init its dependencies
+
+## Add OpenNLPModels
+
+in order to add nlp models copy the folder models into `src/main/resources`

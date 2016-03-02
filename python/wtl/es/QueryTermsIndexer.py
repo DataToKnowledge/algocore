@@ -15,7 +15,7 @@ class QueryTermsIndexer():
     def __init__(self, nodes, index, doc_type):
         self.index = index
         self.doc_type = doc_type
-        self.es = Elasticsearch(nodes)
+        self.es = Elasticsearch(nodes, sniff_on_start=True)
 
     def parse_search_terms(self, terms):
         return {

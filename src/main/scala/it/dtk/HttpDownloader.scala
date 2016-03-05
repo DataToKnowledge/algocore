@@ -63,9 +63,9 @@ object HttpDownloader {
     }
 
 
-  def close() = ws.close()
-
-  override def finalize(): Unit = {
-    close()
-  }
+//  def close() = ws.close()
+//
+//  override def finalize(): Unit = {
+//    close()
+//  }
 }

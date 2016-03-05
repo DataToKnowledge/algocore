@@ -36,7 +36,7 @@ class DBpediaSpotLight(val baseUrl: String, val lang: String) {
 
     case "it" => "http://it.wikipedia.org/wiki/"
 
-    case _ => "https://en.wikipedia.org/wiki/"
+    case _ => "http://en.wikipedia.org/wiki/"
   }
 
   implicit val formats = org.json4s.DefaultFormats
@@ -52,7 +52,7 @@ class DBpediaSpotLight(val baseUrl: String, val lang: String) {
       "text" -> Seq(text),
       "confidence" -> Seq(minConf.toString)
     )
-
+    println("request dbepdia at " + serviceUrl)
     http.wPost(serviceUrl, headers, parameters).flatMap { res =>
       Try {
         val json = parse(res.body)
@@ -96,7 +96,8 @@ class DBpediaSpotLight(val baseUrl: String, val lang: String) {
         wikipediUrl = wikipediaBase + tag.`@surfaceForm`,
         `types` = DBpedia.filter(tag.`@types`).distinct,
         offset = tag.`@offset`.toInt,
-        support = tag.`@support`.toInt
+        support = tag.`@support`.toInt,
+        section = section.toString
       )
     }
     annotations
@@ -133,9 +134,9 @@ class DBpediaSpotLight(val baseUrl: String, val lang: String) {
     t.getOrElse(a)
   }
 
-  def close(): Unit = {
-    http.close()
-  }
+//  def close(): Unit = {
+//    http.close()
+//  }
 }
 
 /**
@@ -150,9 +151,9 @@ object DBpedia {
     pool.getOrElseUpdate(baseUrl, new DBpediaSpotLight(baseUrl, lang))
   }
 
-  def closePool(): Unit = {
-    pool.values.foreach(_.close())
-  }
+//  def closePool(): Unit = {
+//    pool.values.foreach(_.close())
+//  }
 
   val jsonld = "?output=application%2Fld%2Bjson"
 

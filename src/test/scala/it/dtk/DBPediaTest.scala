@@ -14,5 +14,5 @@ object DBPediaTest extends App {
   val service = new DBpediaSpotLight(baseUrl,"it")
   val tags = service.tagText(text)
   tags.foreach(println)
-  service.http.close()
+//  service.http.close()
 }

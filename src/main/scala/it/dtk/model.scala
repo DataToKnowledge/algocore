@@ -68,7 +68,7 @@ object model {
                      keywords: Seq[String] = List.empty,
                      imageUrl: String,
                      publisher: String,
-                     date: DateTime,
+                     date: Long, //mapped to DateTime
                      lang: String = "",
                      cleanedText: String = "",
                      annotations: List[Annotation] = List.empty,

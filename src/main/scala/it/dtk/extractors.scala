@@ -54,7 +54,7 @@ object RomeFeedHelper {
         publisher = publisher,
         categories = e.getCategories.map(_.getName).toList,
         imageUrl = e.getEnclosures.map(_.getUrl).mkString(""),
-        date = new DateTime(e.getPublishedDate),
+        date = new DateTime(e.getPublishedDate).getMillis,
         cleanedText = description
       )
     }.toList
@@ -120,7 +120,7 @@ object GanderHelper {
         else art.description
 
         val date = page.publishDate
-          .map(d => new DateTime(d.getTime)).getOrElse(art.date)
+          .map(d => d.getTime).getOrElse(art.date)
 
         val metaKeywords = page.metaKeywords.split("[,\\s]+").filter(_.length > 0)
           .filterNot(w => StopWords.isStopWord(w))
@@ -265,7 +265,7 @@ object QueryTermsSearch {
         keywords = HtmlHelper.urlTags(res.unescapedUrl),
         imageUrl = res.image.map(_.url).getOrElse(""),
         publisher = res.publisher,
-        date = date,
+        date = date.getMillis,
         lang = res.language,
         cleanedText = res.content
       )

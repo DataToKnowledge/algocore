@@ -52,7 +52,6 @@ class DBpediaSpotLight(val baseUrl: String, val lang: String) {
       "text" -> Seq(text),
       "confidence" -> Seq(minConf.toString)
     )
-    println("request dbepdia at " + serviceUrl)
     http.wPost(serviceUrl, headers, parameters).flatMap { res =>
       Try {
         val json = parse(res.body)

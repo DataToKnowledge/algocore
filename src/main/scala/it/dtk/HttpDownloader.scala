@@ -16,7 +16,8 @@ object HttpDownloader {
   //check for configurations https://www.playframework.com/documentation/2.4.x/ScalaWS
   private val builder = new Builder().
     setFollowRedirect(true).
-    setUserAgent("www.wheretolive.it")
+    setUserAgent("www.wheretolive.it").
+    setAcceptAnyCertificate(true)
 
   val ws = new NingWSClient(builder.build())
 
@@ -30,9 +31,11 @@ object HttpDownloader {
     * @param url the url to retrieve
     * @return get a future to the url using Play WS
     */
-  def wget(url: String, timeout: FiniteDuration = 5.seconds): Option[WSResponse] =
+  def wget(url: String, timeout: FiniteDuration = 10.seconds): Option[WSResponse] =
     try {
-      val req = ws.url(url).withFollowRedirects(true).get()
+      //work around for issue https://github.com/DataToKnowledge/spark-jobs/issues/16
+      val u = url.replace("https", "http")
+      val req = ws.url(u).withFollowRedirects(true).get()
       Some(Await.result(req, timeout))
     } catch {
       case e: Exception =>
@@ -50,7 +53,7 @@ object HttpDownloader {
   }
 
   def wPost(url: String, headers: Map[String, String], parameters: Map[String, Seq[String]],
-            timeout: FiniteDuration = 5.seconds): Option[WSResponse] =
+            timeout: FiniteDuration = 10.seconds): Option[WSResponse] =
     try {
       Some(Await.result(wPostF(url, headers, parameters), timeout))
     } catch {

@@ -97,7 +97,7 @@ class GeoFoss(hosts: String, docPath: String, clusterName: String) {
 }
 
 object GFossIndexerMain extends App {
-  val config = ConfigFactory.load("mac_dev.conf")
+  val config = ConfigFactory.load("linux_prod.conf")
   private val conf = config.getConfig("algocore.elasticsearch")
   private val hosts = conf.as[String]("hosts")
   private val docPath = conf.as[String]("docs.location")

@@ -107,4 +107,5 @@ object GFossIndexerMain extends App {
 
   val gfoss = new GeoFoss(hosts, docPath, clusterName)
   gfoss.loadInitialData()
+  gfoss.close()
 }

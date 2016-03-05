@@ -134,12 +134,14 @@ object GanderHelper {
         )
       }.getOrElse {
       if (webResponse.nonEmpty) {
-        //        val contentType = webResponse.get
-        //          .header("Content-Type")
-        //          .map(_.replace(",text/html", ""))
-        //          .getOrElse("")
-        val (body, lang) = process(webResponse.get.body, "")
-        art.copy(cleanedText = body, lang = lang)
+        try {
+          val (body, lang) = process(webResponse.get.body, "")
+          art.copy(cleanedText = body, lang = lang)
+        }catch {
+          case ex: Exception =>
+            art
+        }
+
       } else art
     }
   }

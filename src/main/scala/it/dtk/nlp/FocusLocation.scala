@@ -14,11 +14,10 @@ object FocusLocation {
   def getConnection(hosts: String, docPath: String, clusterName: String): FocusLocation = {
     if (pool.isEmpty)
       pool = Some(new FocusLocation(hosts, docPath, clusterName))
-
     pool.get
   }
 
-  def close(): Unit ={
+  def close(): Unit = {
     pool.foreach(_.close())
   }
 }
@@ -30,7 +29,7 @@ object FocusLocation {
 class FocusLocation(hosts: String, docPath: String, clusterName: String) {
 
   val gfoss = new GeoFoss(hosts, docPath, clusterName)
-  val locationConsts = List("PopulatedPlace", "Place")
+  val locationConsts = List("PopulatedPlace", "Place", "Location")
 
   def isLocation(a: Annotation): Boolean = {
     a.`types`
@@ -49,47 +48,55 @@ class FocusLocation(hosts: String, docPath: String, clusterName: String) {
     *
     */
   def extract(article: Article): Option[Location] = {
-    Try {
+    try {
+      //all the locations which first letter start with a Uppercase Char
       val locations = article.annotations
         .filter(isLocation(_))
-        .groupBy(_.surfaceForm)
+        .groupBy(_.surfaceForm).filter(_._1.charAt(0).isUpper)
 
       //get the most frequent province and filter the annotation which are not in this province
       val geoLocs = locations.map {
         case (loc, _) =>
-          val gfossLoc = Try(gfoss.findLocation(loc).headOption).getOrElse(None)
-          loc -> gfossLoc
+          val l = gfoss.findLocation(loc)
+          loc -> l.headOption
       }.filter(_._2.isDefined)
-        .map(locOpt => locOpt._1 -> locOpt._2.get)
+        .map(loc => loc._1 -> loc._2.get)
+        .filterNot(e => e._1 == e._2.regionName)
 
-      val geoLocations = geoLocs.filter(m => m._2.regionName == m._2.cityName)
+      if (geoLocs.isEmpty) None
+      else if (geoLocs.size == 1) {
+        geoLocs.values.headOption
+      } else {
 
-      //get the frequent values in the frequent regions
-      val frequentRegions = frequentValues(geoLocations.values.toSeq).map(_._1).toSet
-      val frequentLocations = geoLocations.filter(v => frequentRegions.contains(v._2.regionName))
-        .keySet
+        //get the frequent values in the frequent regions
+        val regions = frequentValues(geoLocs.values.toSeq).map(_._1).toSet
+        val frequentLocations = geoLocs.filter(v => regions.contains(v._2.regionName))
+          .keySet
 
-      val textLength = (article.title.length +
-        article.description.length +
-        article.cleanedText.length).toDouble
+        val textLength = (article.title.length +
+          article.description.length +
+          article.cleanedText.length).toDouble
 
-      //select the place that is most frequent and occours with the lowest offset
-      val scores = locations
-        .filter(k => frequentLocations.contains(k._1))
-        .map {
-          case (loc, list) =>
+        //select the place that is most frequent and occurs with the lowest offset
+        val scores = locations
+          .filter(k => frequentLocations.contains(k._1))
+          .map {
+            case (loc, list) =>
+              val posScore = list
+                .map(_.offset.toDouble).sum
 
-            val posScore = list
-              .map(_.offset.toDouble)
-              .sum
+              loc -> posScore / textLength
+          }
 
-            loc -> posScore / textLength
-        }
+        val lowestValue = scores.toSeq.sortBy(_._2).head._1
 
-      val lowestValue = scores.toSeq.sortBy(_._2).head._1
-
-      geoLocations.get(lowestValue)
-    }.toOption.flatten
+        geoLocs.get(lowestValue)
+      }
+    } catch {
+      case e: Exception =>
+        e.printStackTrace()
+        None
+    }
   }
 
   private def frequentValues(locations: Seq[Location], minFreq: Double = 0.5D): Seq[(String, Double)] = {
@@ -104,7 +111,7 @@ class FocusLocation(hosts: String, docPath: String, clusterName: String) {
     frequentList.filter(_._2 >= minFreq)
   }
 
-  def close(): Unit ={
+  def close(): Unit = {
     gfoss.close()
   }
 

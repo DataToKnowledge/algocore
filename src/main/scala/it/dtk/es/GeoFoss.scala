@@ -3,7 +3,7 @@ package it.dtk.es
 import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.source.Indexable
 import com.sksamuel.elastic4s.{ElasticClient, ElasticsearchClientUri}
-import com.typesafe.config.{Config, ConfigFactory}
+import com.typesafe.config.ConfigFactory
 import it.dtk.model._
 import net.ceedubs.ficus.Ficus._
 import org.elasticsearch.common.settings.Settings
@@ -13,7 +13,7 @@ import org.json4s.ext.JodaTimeSerializers
 import org.json4s.jackson.JsonMethods._
 import org.json4s.jackson.Serialization
 import org.json4s.jackson.Serialization.write
-
+import scala.concurrent.duration._
 import scala.io.Source
 
 /**
@@ -37,6 +37,8 @@ class GeoFoss(hosts: String, docPath: String, clusterName: String) {
 
     val indexReq = loadCsv()
       .map(l => index into docPath id l.id source l)
+
+    implicit val duration: Duration = 360.seconds
 
     indexReq
       .grouped(200)

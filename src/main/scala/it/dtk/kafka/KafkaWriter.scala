@@ -97,8 +97,8 @@ case class ConsumerProperties(
     props.put("enable.auto.commit", "true")
     props.put("auto.commit.interval.ms", "1000")
     props.put("session.timeout.ms", "30000")
-    props.put("key.deserializer", keyDes)
-    props.put("value.deserializer", valueDes)
+//    props.put("key.deserializer", keyDes)
+//    props.put("value.deserializer", valueDes)
     props
   }
 }

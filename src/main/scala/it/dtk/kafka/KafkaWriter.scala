@@ -6,6 +6,7 @@ import java.util.concurrent.Future
 import org.apache.kafka.clients.consumer.{ConsumerConfig, ConsumerRecords, KafkaConsumer}
 import org.apache.kafka.clients.producer.{RecordMetadata, ProducerRecord, KafkaProducer}
 import org.apache.kafka.common.TopicPartition
+import org.apache.kafka.common.serialization.ByteArrayDeserializer
 import collection.JavaConversions._
 import scala.collection.mutable
 
@@ -102,15 +103,17 @@ case class ConsumerProperties(
   }
 }
 
-class KafkaReader[K, V](val consProps: ConsumerProperties) {
-  val consumer = new KafkaConsumer[K, V](consProps.props())
+
+
+class KafkaReader(val consProps: ConsumerProperties) {
+  val consumer = new KafkaConsumer[Array[Byte], Array[Byte]](consProps.props(), new ByteArrayDeserializer, new ByteArrayDeserializer)
   consumer.subscribe(consProps.topics.split(",").toList)
 
   /**
     *
     * @return
     */
-  def poll(timeout: Long = 100): ConsumerRecords[K, V] = {
+  def poll(timeout: Long = 100): ConsumerRecords[Array[Byte], Array[Byte]] = {
     consumer.poll(timeout)
   }
 
@@ -134,7 +137,7 @@ object Main extends App {
     groupName = "feed_items"
   )
 
-  val reader = new KafkaReader[Array[Byte], Array[Byte]](consProps)
+  val reader = new KafkaReader(consProps)
   val cons = reader.consumer
 
   val ass = cons.assignment()

@@ -19,9 +19,9 @@ import org.apache.tika.sax.BodyContentHandler
 import org.jsoup.Jsoup
 
 import scala.collection.JavaConversions._
-import scala.concurrent.duration._
 import scala.language.postfixOps
 import scala.util.Try
+import scala.concurrent.duration.{FiniteDuration, _}
 
 /**
   * Extract feed usig Rome
@@ -103,12 +103,11 @@ object TikaHelper {
 object GanderHelper {
 
   import TikaHelper._
-  import com.github.nscala_time.time.Imports._
 
   def extract(html: String) = Gander.extract(html)
 
   def mainContent(art: Article): Article = {
-    val webResponse = HttpDownloader.wget(art.uri)
+    val webResponse = HttpDownloader.wget(art.uri, 5.seconds)
     webResponse
       .map(ws => Try(ws.body))
       .filter(t => t.isSuccess)

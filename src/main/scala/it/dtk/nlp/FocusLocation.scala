@@ -88,9 +88,13 @@ class FocusLocation(hosts: String, docPath: String, clusterName: String) {
               loc -> posScore / textLength
           }
 
-        val lowestValue = scores.toSeq.sortBy(_._2).head._1
 
-        geoLocs.get(lowestValue)
+        val lowestValue = scores.toSeq.
+          sortBy(_._2).map(_._1).headOption
+
+        if (lowestValue.isDefined)
+          geoLocs.get(lowestValue.get)
+        else geoLocs.values.headOption
       }
     } catch {
       case e: Exception =>

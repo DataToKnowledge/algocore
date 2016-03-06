@@ -3,10 +3,10 @@ package it.dtk.kafka
 import java.util.Properties
 import java.util.concurrent.Future
 
-import org.apache.kafka.clients.consumer.{ConsumerConfig, ConsumerRecords, KafkaConsumer}
-import org.apache.kafka.clients.producer.{RecordMetadata, ProducerRecord, KafkaProducer}
-import org.apache.kafka.common.TopicPartition
+import org.apache.kafka.clients.consumer.{ConsumerRecords, KafkaConsumer}
+import org.apache.kafka.clients.producer.{ProducerRecord, RecordMetadata, KafkaProducer}
 import org.apache.kafka.common.serialization.ByteArrayDeserializer
+
 import collection.JavaConversions._
 import scala.collection.mutable
 
@@ -105,64 +105,64 @@ case class ConsumerProperties(
 
 
 
-class KafkaReader(val consProps: ConsumerProperties) {
-  val consumer = new KafkaConsumer[Array[Byte], Array[Byte]](consProps.props(), new ByteArrayDeserializer, new ByteArrayDeserializer)
-  consumer.subscribe(consProps.topics.split(",").toList)
+//class KafkaReader(val consProps: ConsumerProperties) {
+//  val consumer = new KafkaConsumer[Array[Byte], Array[Byte]](consProps.props(), new ByteArrayDeserializer, new ByteArrayDeserializer)
+//  consumer.subscribe(consProps.topics.split(",").toList)
+//
+//  /**
+//    *
+//    * @return
+//    */
+//  def poll(timeout: Long = 100): ConsumerRecords[Array[Byte], Array[Byte]] = {
+//    consumer.poll(timeout)
+//  }
+//
+//  override def finalize(): Unit = {
+//    consumer.close()
+//  }
+//
+//  def close(): Unit = {
+//    consumer.close()
+//  }
+//}
 
-  /**
-    *
-    * @return
-    */
-  def poll(timeout: Long = 100): ConsumerRecords[Array[Byte], Array[Byte]] = {
-    consumer.poll(timeout)
-  }
-
-  override def finalize(): Unit = {
-    consumer.close()
-  }
-
-  def close(): Unit = {
-    consumer.close()
-  }
-}
-
-
-object Main extends App {
-
-  //  ConsumerConfig.main(Array.empty)
-
-  val consProps = ConsumerProperties(
-    brokers = "192.168.99.100:9092",
-    topics = "feed_items",
-    groupName = "feed_items"
-  )
-
-  val reader = new KafkaReader(consProps)
-  val cons = reader.consumer
-
-  val ass = cons.assignment()
-
-  println(ass)
-
-  val topics = cons.listTopics()
-
-  println(topics)
-
-  println(cons.assignment())
-
-  val res = cons.poll(1)
-
-  if (res.count() == 0) {
-    cons.seekToBeginning(new TopicPartition(consProps.topics, 0))
-  }
-
-  while (true) {
-    val res = reader.poll()
-    res.foreach { r =>
-      println(new String(r.key()))
-      print(new String(r.value()))
-    }
-  }
-
-  reader.consumer.close()
-}
+//
+//object Main extends App {
+//
+//  //  ConsumerConfig.main(Array.empty)
+//
+//  val consProps = ConsumerProperties(
+//    brokers = "192.168.99.100:9092",
+//    topics = "feed_items",
+//    groupName = "feed_items"
+//  )
+//
+//  val reader = new KafkaReader(consProps)
+//  val cons = reader.consumer
+//
+//  val ass = cons.assignment()
+//
+//  println(ass)
+//
+//  val topics = cons.listTopics()
+//
+//  println(topics)
+//
+//  println(cons.assignment())
+//
+//  val res = cons.poll(1)
+//
+//  if (res.count() == 0) {
+//    cons.seekToBeginning(new TopicPartition(consProps.topics, 0))
+//  }
+//
+//  while (true) {
+//    val res = reader.poll()
+//    res.foreach { r =>
+//      println(new String(r.key()))
+//      print(new String(r.value()))
+//    }
+//  }
+//
+//  reader.consumer.close()
+//}

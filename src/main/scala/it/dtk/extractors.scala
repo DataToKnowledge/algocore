@@ -31,33 +31,40 @@ object RomeFeedHelper {
   import com.github.nscala_time.time.Imports._
 
   def parse(url: String, publisher: String): Seq[Article] = {
-    val input = new SyndFeedInput()
-    val reader = input.build(new XmlReader(new URL(url)))
+    try {
+      val input = new SyndFeedInput()
+      val reader = input.build(new XmlReader(new URL(url)))
 
-    reader.getEntries.map { e =>
+      reader.getEntries.map { e =>
 
-      val description = HtmlHelper.text(e.getDescription.getValue)
+        val description = HtmlHelper.text(e.getDescription.getValue)
 
-      val index = if (e.getUri.lastIndexOf("http://") != -1)
-        e.getUri.lastIndexOf("http://")
-      else e.getUri.lastIndexOf("https://")
+        val index = if (e.getUri.lastIndexOf("http://") != -1)
+          e.getUri.lastIndexOf("http://")
+        else e.getUri.lastIndexOf("https://")
 
-      val uri = e.getUri.substring(index, e.getUri.length)
-      val keywords = HtmlHelper.urlTags(uri)
-        .filterNot(w => StopWords.isStopWord(w))
+        val uri = e.getUri.substring(index, e.getUri.length)
+        val keywords = HtmlHelper.urlTags(uri)
+          .filterNot(w => StopWords.isStopWord(w))
 
-      Article(
-        uri = uri,
-        title = HtmlHelper.text(e.getTitle),
-        description = HtmlHelper.text(description),
-        keywords = keywords,
-        publisher = publisher,
-        categories = e.getCategories.map(_.getName).toList,
-        imageUrl = e.getEnclosures.map(_.getUrl).mkString(""),
-        date = new DateTime(e.getPublishedDate).getMillis,
-        cleanedText = description
-      )
-    }.toList
+        Article(
+          uri = uri,
+          title = HtmlHelper.text(e.getTitle),
+          description = HtmlHelper.text(description),
+          keywords = keywords,
+          publisher = publisher,
+          categories = e.getCategories.map(_.getName).toList,
+          imageUrl = e.getEnclosures.map(_.getUrl).mkString(""),
+          date = new DateTime(e.getPublishedDate).getMillis,
+          cleanedText = description
+        )
+      }.toList
+    } catch {
+      case ex: Exception =>
+        println(s"error in reading data from ${url} with error ${ex.getMessage}")
+        Seq.empty[Article]
+    }
+
   }
 }
 
@@ -136,7 +143,7 @@ object GanderHelper {
         try {
           val (body, lang) = process(webResponse.get.body, "")
           art.copy(cleanedText = body, lang = lang)
-        }catch {
+        } catch {
           case ex: Exception =>
             art
         }

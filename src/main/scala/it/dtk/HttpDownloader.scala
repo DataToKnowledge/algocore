@@ -39,8 +39,7 @@ object HttpDownloader {
       Some(Await.result(req, timeout))
     } catch {
       case e: Exception =>
-        e.printStackTrace()
-        println(url)
+        println(s"got error ${e.getMessage} requesting url $url")
         None
     }
 
@@ -63,7 +62,7 @@ object HttpDownloader {
     }
 
 
-//  def close() = ws.close()
+  def close() = ws.close()
 //
 //  override def finalize(): Unit = {
 //    close()

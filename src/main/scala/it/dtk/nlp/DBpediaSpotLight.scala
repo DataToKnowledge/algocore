@@ -133,9 +133,9 @@ class DBpediaSpotLight(val baseUrl: String, val lang: String) {
     t.getOrElse(a)
   }
 
-//  def close(): Unit = {
-//    http.close()
-//  }
+  def close(): Unit = {
+    http.close()
+  }
 }
 
 /**

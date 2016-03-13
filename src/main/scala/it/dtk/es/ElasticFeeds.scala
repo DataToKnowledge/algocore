@@ -11,11 +11,11 @@ import org.json4s.jackson.Serialization
 import org.json4s.jackson.Serialization.write
 import com.sksamuel.elastic4s.ElasticDsl._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 /**
-  * Created by fabiofumarola on 27/02/16.
-  */
+ * Created by fabiofumarola on 27/02/16.
+ */
 class ElasticFeeds(hosts: String, indexPath: String, clusterName: String) {
   implicit val formats = Serialization.formats(NoTypeHints) ++ JodaTimeSerializers.all
 
@@ -23,7 +23,6 @@ class ElasticFeeds(hosts: String, indexPath: String, clusterName: String) {
     .put("cluster.name", clusterName).build()
 
   val client = ElasticClient.transport(settings, ElasticsearchClientUri(s"elasticsearch://$hosts"))
-
 
   implicit object FeedHitAs extends HitAs[Feed] {
     override def as(hit: RichSearchHit): Feed = {

@@ -3,14 +3,13 @@ package it.dtk.elastic4s
 import java.net.InetSocketAddress
 
 import org.elasticsearch.action.ActionRequest
-import org.elasticsearch.action.index.{IndexRequestBuilder, IndexRequest}
+import org.elasticsearch.action.index.{ IndexRequestBuilder, IndexRequest }
 import org.elasticsearch.action.support.replication.ReplicationRequest
 import org.elasticsearch.client.Client
 import org.elasticsearch.client.transport.TransportClient
 import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.common.transport.InetSocketTransportAddress
 import scala.util.Try
-
 
 object ElasticClient {
 
@@ -25,9 +24,7 @@ object ElasticClient {
   }
 }
 
-
 class ElasticClient(val client: Client) {
-
 
   def bulk(reqs: List[IndexRequestBuilder]) = {
     val bulk = client.prepareBulk()
@@ -35,10 +32,8 @@ class ElasticClient(val client: Client) {
     bulk.get()
   }
 
-
   def index(index: String, `type`: String, json: String): IndexRequestBuilder =
     client.prepareIndex(index, `type`).setSource(json)
-
 
   def close(): Unit = {
     Try(client.close())

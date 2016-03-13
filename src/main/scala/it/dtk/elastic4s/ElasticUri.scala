@@ -1,15 +1,17 @@
 package it.dtk.elastic4s
 
 /**
-  * Created by fabiofumarola on 10/02/16.
-  */
+ * Created by fabiofumarola on 10/02/16.
+ */
 object ElasticUri {
 
   private val prefix = "elasticsearch://"
 
   def apply(str: String): ElasticUri = {
-    require(str.trim.nonEmpty && !str.startsWith("elasticsearch://"),
-      "Invalid uri, must be in format host:port,host:port,...")
+    require(
+      str.trim.nonEmpty && !str.startsWith("elasticsearch://"),
+      "Invalid uri, must be in format host:port,host:port,..."
+    )
 
     val hosts = str.split(",")
 

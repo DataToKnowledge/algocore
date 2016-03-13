@@ -9,21 +9,22 @@ import play.api.libs.json._
 import scala.collection.mutable
 import scala.util.Try
 
-case class DbPediaTag(`@URI`: String,
-                      `@support`: String,
-                      `@types`: String,
-                      `@surfaceForm`: String,
-                      `@offset`: String,
-                      `@similarityScore`: String,
-                      `@percentageOfSecondRank`: String
-                     )
+case class DbPediaTag(
+  `@URI`: String,
+  `@support`: String,
+  `@types`: String,
+  `@surfaceForm`: String,
+  `@offset`: String,
+  `@similarityScore`: String,
+  `@percentageOfSecondRank`: String
+)
 
 /**
-  * Query a dbpedia spotlight service
-  *
-  * @param baseUrl
-  * @param lang
-  */
+ * Query a dbpedia spotlight service
+ *
+ * @param baseUrl
+ * @param lang
+ */
 class DBpediaSpotLight(val baseUrl: String, val lang: String) {
 
   val serviceUrl = s"$baseUrl/rest/annotate"
@@ -42,11 +43,11 @@ class DBpediaSpotLight(val baseUrl: String, val lang: String) {
   implicit val formats = org.json4s.DefaultFormats
 
   /**
-    *
-    * @param text
-    * @param minConf
-    * @return the text annotated with the dbpedia spotlight reources
-    */
+   *
+   * @param text
+   * @param minConf
+   * @return the text annotated with the dbpedia spotlight reources
+   */
   def tagText(text: String, minConf: Float = 0.15F): Seq[DbPediaTag] = {
     val parameters = Map(
       "text" -> Seq(text),
@@ -80,13 +81,12 @@ class DBpediaSpotLight(val baseUrl: String, val lang: String) {
     }.getOrElse(List.empty[DbPediaTag])
   }
 
-
   /**
-    *
-    * @param text
-    * @param minConf
-    * @return return text annotated as Seq[Annotation]
-    */
+   *
+   * @param text
+   * @param minConf
+   * @return return text annotated as Seq[Annotation]
+   */
   def annotateText(text: String, section: DocumentSection, minConf: Float = 0.15F): Seq[Annotation] = {
     val annotations = tagText(text, minConf).map { tag =>
       Annotation(
@@ -105,9 +105,9 @@ class DBpediaSpotLight(val baseUrl: String, val lang: String) {
   }
 
   /**
-    * @param a annotation
-    * @return other annotation extracted using DBpedia website
-    */
+   * @param a annotation
+   * @return other annotation extracted using DBpedia website
+   */
   def enrichAnnotation(a: Annotation): Annotation = {
     val t = Try {
       val optJson = DBpedia.getResource(a.dbpediaUrl)
@@ -139,9 +139,9 @@ class DBpediaSpotLight(val baseUrl: String, val lang: String) {
 }
 
 /**
-  * Query dbpedia to extract additional annotations
-  * example of resource queried http://it.dbpedia.org/resource/Capurso/html?output=application%2Fld%2Bjson
-  */
+ * Query dbpedia to extract additional annotations
+ * example of resource queried http://it.dbpedia.org/resource/Capurso/html?output=application%2Fld%2Bjson
+ */
 object DBpedia {
 
   private val pool = mutable.Map.empty[String, DBpediaSpotLight]
@@ -150,19 +150,19 @@ object DBpedia {
     pool.getOrElseUpdate(baseUrl, new DBpediaSpotLight(baseUrl, lang))
   }
 
-//  def closePool(): Unit = {
-//    pool.values.foreach(_.close())
-//  }
+  //  def closePool(): Unit = {
+  //    pool.values.foreach(_.close())
+  //  }
 
   val jsonld = "?output=application%2Fld%2Bjson"
 
   val http = HttpDownloader
 
   /**
-    *
-    * @param dbpediaUrl
-    * @return
-    */
+   *
+   * @param dbpediaUrl
+   * @return
+   */
   def getResource(dbpediaUrl: String): Option[JValue] = {
     http.wget(dbpediaUrl + jsonld).map(r => parse(r.body))
   }
@@ -181,10 +181,10 @@ object DBpedia {
   }
 
   /**
-    *
-    * @param json
-    * @return the types extract from the dbpedia result
-    */
+   *
+   * @param json
+   * @return the types extract from the dbpedia result
+   */
   def getTypes(json: JValue): List[AnnotationType] = {
     val cand = (json \ "@graph" \ "@type").values match {
       case list: List[String] => list
@@ -206,7 +206,6 @@ object DBpedia {
 
   def getThumbnail(json: JValue): String =
     (json \ "@graph" \ "thumbnail").values.toString
-
 
   def getCategory(json: JValue): List[AnnotationType] = {
     val cand = (json \ "@graph" \ "subject").values.toString

@@ -6,7 +6,7 @@ import java.nio.charset.Charset
 import java.util.Locale
 
 import com.intenthq.gander.Gander
-import com.rometools.rome.io.{SyndFeedInput, XmlReader}
+import com.rometools.rome.io.{ SyndFeedInput, XmlReader }
 import it.dtk.model._
 import it.dtk.nlp.StopWords
 import org.apache.tika.language.LanguageIdentifier
@@ -14,18 +14,18 @@ import org.apache.tika.metadata.Metadata
 import org.apache.tika.parser.html.HtmlParser
 import org.apache.tika.parser.pdf.PDFParser
 import org.apache.tika.parser.txt.TXTParser
-import org.apache.tika.parser.{ParseContext, Parser}
+import org.apache.tika.parser.{ ParseContext, Parser }
 import org.apache.tika.sax.BodyContentHandler
 import org.jsoup.Jsoup
 
 import scala.collection.JavaConversions._
 import scala.language.postfixOps
 import scala.util.Try
-import scala.concurrent.duration.{FiniteDuration, _}
+import scala.concurrent.duration.{ FiniteDuration, _ }
 
 /**
-  * Extract feed usig Rome
-  */
+ * Extract feed usig Rome
+ */
 object RomeFeedHelper {
 
   import com.github.nscala_time.time.Imports._
@@ -69,8 +69,8 @@ object RomeFeedHelper {
 }
 
 /**
-  * Parse a string using tika
-  */
+ * Parse a string using tika
+ */
 object TikaHelper {
 
   def process(html: String, contentType: String): (String, String) = {
@@ -82,12 +82,10 @@ object TikaHelper {
 
     try {
       parser.parse(in, bodyHandler, metadata, context)
-    }
-    catch {
+    } catch {
       case e: Throwable =>
       //if there is an error we don't care
-    }
-    finally {
+    } finally {
       in.close()
     }
 
@@ -105,8 +103,8 @@ object TikaHelper {
 }
 
 /**
-  * Uses Gander to extract the article from html
-  */
+ * Uses Gander to extract the article from html
+ */
 object GanderHelper {
 
   import TikaHelper._
@@ -139,23 +137,23 @@ object GanderHelper {
           cleanedText = page.cleanedText.getOrElse("")
         )
       }.getOrElse {
-      if (webResponse.nonEmpty) {
-        try {
-          val (body, lang) = process(webResponse.get.body, "")
-          art.copy(cleanedText = body, lang = lang)
-        } catch {
-          case ex: Exception =>
-            art
-        }
+        if (webResponse.nonEmpty) {
+          try {
+            val (body, lang) = process(webResponse.get.body, "")
+            art.copy(cleanedText = body, lang = lang)
+          } catch {
+            case ex: Exception =>
+              art
+          }
 
-      } else art
-    }
+        } else art
+      }
   }
 }
 
 /**
-  * General HTML helper
-  */
+ * General HTML helper
+ */
 object HtmlHelper {
   def text(html: String): String =
     Jsoup.parse(html).text()
@@ -193,8 +191,8 @@ object HtmlHelper {
 }
 
 /**
-  * Used to find news based on term queries
-  */
+ * Used to find news based on term queries
+ */
 object QueryTermsSearch {
 
   import java.text.SimpleDateFormat
@@ -207,23 +205,25 @@ object QueryTermsSearch {
 
   implicit val formats = org.json4s.DefaultFormats ++ org.json4s.ext.JodaTimeSerializers.all
 
-  case class Image(url: String,
-                   tbUrl: String,
-                   originalContextUrl: String,
-                   publisher: String,
-                   tbWidth: Int,
-                   tbHeight: Int)
+  case class Image(
+    url: String,
+    tbUrl: String,
+    originalContextUrl: String,
+    publisher: String,
+    tbWidth: Int,
+    tbHeight: Int
+  )
 
-  case class SearchResult(content: String,
-                          unescapedUrl: String,
-                          url: String,
-                          titleNoFormatting: String,
-                          publisher: String,
-                          publishedDate: String,
-                          language: String,
-                          image: Option[Image]
-                         )
-
+  case class SearchResult(
+    content: String,
+    unescapedUrl: String,
+    url: String,
+    titleNoFormatting: String,
+    publisher: String,
+    publishedDate: String,
+    language: String,
+    image: Option[Image]
+  )
 
   def decode(url: String): String =
     java.net.URLDecoder.decode(url, "UTF-8")
@@ -231,12 +231,12 @@ object QueryTermsSearch {
   //  val example = "https://ajax.googleapis.com/ajax/services/search/news?v=1.0&q=furti%20puglia&hl=it&rsz=8&scoring=d&start=0"
 
   /**
-    *
-    * @param query
-    * @param lang
-    * @param ipAddress
-    * @return a List of generate urls with the given term queries
-    */
+   *
+   * @param query
+   * @param lang
+   * @param ipAddress
+   * @return a List of generate urls with the given term queries
+   */
   def generateUrls(query: List[String], lang: String, ipAddress: String): Seq[String] = {
     val urlQuery = query.mkString("%20")
     val starts = (0 until 8).map(_ * 8)
@@ -247,10 +247,10 @@ object QueryTermsSearch {
   }
 
   /**
-    *
-    * @param url
-    * @return return a list of search Results
-    */
+   *
+   * @param url
+   * @return return a list of search Results
+   */
   def getResults(url: String): List[SearchResult] = {
     HttpDownloader.wget(url).map { res =>
       val json = parse(res.body)

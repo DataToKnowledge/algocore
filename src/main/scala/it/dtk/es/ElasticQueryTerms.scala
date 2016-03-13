@@ -12,11 +12,11 @@ import org.json4s.jackson.Serialization
 import org.json4s.jackson.Serialization.write
 import com.sksamuel.elastic4s.ElasticDsl._
 import scala.util._
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 /**
-  * Created by fabiofumarola on 27/02/16.
-  */
+ * Created by fabiofumarola on 27/02/16.
+ */
 class ElasticQueryTerms(hosts: String, indexPath: String, clusterName: String) {
   implicit val formats = Serialization.formats(NoTypeHints) ++ JodaTimeSerializers.all
 
@@ -46,13 +46,13 @@ class ElasticQueryTerms(hosts: String, indexPath: String, clusterName: String) {
   }
 
   /**
-    *
-    * @param fromIndex
-    * @param sizeRes
-    * @param ex
-    * @return a future of query term
-    *         call listQueryTerm(...).await to get results
-    */
+   *
+   * @param fromIndex
+   * @param sizeRes
+   * @param ex
+   * @return a future of query term
+   *         call listQueryTerm(...).await to get results
+   */
   def listQueryTerms(fromIndex: Int = 0, sizeRes: Int = 10)(implicit ex: ExecutionContext): Future[Seq[QueryTerm]] = {
     val req = search in indexPath query matchAllQuery from fromIndex size sizeRes
     client.execute(req).map(_.as[QueryTerm])

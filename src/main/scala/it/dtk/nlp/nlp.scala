@@ -1,8 +1,8 @@
 package it.dtk.nlp
 
-import opennlp.tools.postag.{POSModel, POSTaggerME}
-import opennlp.tools.sentdetect.{SentenceDetectorME, SentenceModel}
-import opennlp.tools.tokenize.{TokenizerME, TokenizerModel}
+import opennlp.tools.postag.{ POSModel, POSTaggerME }
+import opennlp.tools.sentdetect.{ SentenceDetectorME, SentenceModel }
+import opennlp.tools.tokenize.{ TokenizerME, TokenizerModel }
 import opennlp.tools.util.Span
 
 import scala.io.Source
@@ -28,22 +28,20 @@ class Tokenizer(lang: String) {
   }
 
   /**
-    *
-    * @param text
-    * @return the text tokenized in a array
-    */
+   *
+   * @param text
+   * @return the text tokenized in a array
+   */
   def tokenize(text: String): Seq[String] = model.tokenize(text)
 
   /**
-    *
-    * @param text
-    * @return return the a Seq of Span
-    */
+   *
+   * @param text
+   * @return return the a Seq of Span
+   */
   def tokenizePos(text: String): Seq[Span] = model.tokenizePos(text)
 
-
 }
-
 
 class SentenceDetector(lang: String) {
   val model = lang match {
@@ -61,10 +59,10 @@ class SentenceDetector(lang: String) {
 }
 
 /**
-  * The original tagset can be found at http://medialab.di.unipi.it/wiki/Tanl_POS_Tagset
-  *
-  * @param lang
-  */
+ * The original tagset can be found at http://medialab.di.unipi.it/wiki/Tanl_POS_Tagset
+ *
+ * @param lang
+ */
 class PosTagger(lang: String) {
 
   case class TokenPos(token: String, pos: String)
@@ -79,10 +77,10 @@ class PosTagger(lang: String) {
   }
 
   /**
-    *
-    * @param tokens
-    * @return a list of object token pos
-    */
+   *
+   * @param tokens
+   * @return a list of object token pos
+   */
   def posTag(tokens: Seq[String]): Seq[TokenPos] = {
     tokens
       .zip(model.tag(tokens.toArray))

@@ -1,13 +1,13 @@
 package it.dtk.nlp
 
 import it.dtk.HttpDownloader
-import it.dtk.model.DocumentSection.DocumentSection
-import it.dtk.model._
+import it.dtk.protobuf._
 import org.json4s.JsonAST.JValue
 import org.json4s.jackson.JsonMethods._
 import play.api.libs.json._
 import scala.collection.mutable
 import scala.util.Try
+import it.dtk.protobuf.Annotation.DocumentSection
 
 case class DbPediaTag(
   `@URI`: String,
@@ -87,16 +87,16 @@ class DBpediaSpotLight(val baseUrl: String, val lang: String) {
    * @param minConf
    * @return return text annotated as Seq[Annotation]
    */
-  def annotateText(text: String, section: DocumentSection, minConf: Float = 0.15F): Seq[Annotation] = {
+  def annotateText(text: String, section: DocumentSection.EnumVal, minConf: Float = 0.15F): Seq[Annotation] = {
     val annotations = tagText(text, minConf).map { tag =>
       Annotation(
         surfaceForm = tag.`@surfaceForm`,
         dbpediaUrl = tag.`@URI`,
-        wikipediUrl = wikipediaBase + tag.`@surfaceForm`,
+        wikipediaUrl = wikipediaBase + tag.`@surfaceForm`,
         `types` = DBpedia.filter(tag.`@types`).distinct,
         offset = tag.`@offset`.toInt,
         support = tag.`@support`.toInt,
-        section = section.toString
+        section = section
       )
     }
     annotations

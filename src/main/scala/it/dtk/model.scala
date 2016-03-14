@@ -58,71 +58,69 @@ object model {
     schedulerData: SchedulerData = SchedulerData()
   )
 
-  case class Follower(screenName: String, twitterUserId: String)
-
   case class QueryTerm(
     terms: List[String],
     lang: String = "it",
     timestamp: Option[DateTime] = Some(DateTime.now().minusMinutes(10))
   )
 
-  case class Article(
-    uri: String,
-    title: String,
-    description: String,
-    categories: List[String],
-    keywords: Seq[String] = List.empty,
-    imageUrl: String,
-    publisher: String,
-    date: Long, //mapped to DateTime
-    lang: String = "",
-    cleanedText: String = "",
-    annotations: List[Annotation] = List.empty,
-    focusLocation: Option[Location] = None
-  )
-
-  object DocumentSection extends Enumeration {
-    type DocumentSection = Value
-    val Title, Summary, Corpus, KeyWords, NotSet = Value
-  }
-
-  import DocumentSection._
-
-  case class Annotation(
-    surfaceForm: String,
-    dbpediaUrl: String,
-    wikipediUrl: String,
-    `types`: Seq[AnnotationType],
-    offset: Int,
-    support: Int,
-    pin: Option[Pin] = None,
-    section: String = DocumentSection.NotSet.toString
-  )
-
-  /**
-   *
-   * Given a raw annotation of the type "DBpedia:Location,Schema:Place,DBpedia:Place,Wikidata:Q486972,DBpedia:PopulatedPlace"
-   *
-   * @param src   the source of the annotation type, examples: DBPedia, Schema, Wikidata, DUL
-   * @param value the value of the annotation type, examples: Location, Place, PopulatedPlace
-   */
-  case class AnnotationType(src: String, value: String)
-
-  case class Location(
-    id: Int,
-    cityName: String,
-    provinceId: Int,
-    provinceName: String,
-    regionId: Int,
-    regionName: String,
-    population: Int,
-    pin: Pin
-  )
-
-  case class Pin(lat: Double, long: Double)
+//  case class Article(
+//    uri: String,
+//    title: String,
+//    description: String,
+//    categories: List[String],
+//    keywords: Seq[String] = List.empty,
+//    imageUrl: String,
+//    publisher: String,
+//    date: Long, //mapped to DateTime
+//    lang: String = "",
+//    cleanedText: String = "",
+//    annotations: List[Annotation] = List.empty,
+//    focusLocation: Option[Location] = None
+//  )
+//
+//  object DocumentSection extends Enumeration {
+//    type DocumentSection = Value
+//    val Title, Summary, Corpus, KeyWords, NotSet = Value
+//  }
+//
+//  case class Annotation(
+//    surfaceForm: String,
+//    dbpediaUrl: String,
+//    wikipediUrl: String,
+//    `types`: Seq[AnnotationType],
+//    offset: Int,
+//    support: Int,
+//    pin: Option[Pin] = None,
+//    section: String = DocumentSection.NotSet.toString
+//  )
+//
+//  /**
+//   *
+//   * Given a raw annotation of the type "DBpedia:Location,Schema:Place,DBpedia:Place,Wikidata:Q486972,DBpedia:PopulatedPlace"
+//   *
+//   * @param src   the source of the annotation type, examples: DBPedia, Schema, Wikidata, DUL
+//   * @param value the value of the annotation type, examples: Location, Place, PopulatedPlace
+//   */
+//  case class AnnotationType(src: String, value: String)
+//
+//  case class Location(
+//    id: Int,
+//    cityName: String,
+//    //    provinceId: Int,
+//    provinceName: String,
+//    //    regionId: Int,
+//    regionName: String,
+//    //    population: Int,
+//    pin: Pin
+//  )
+//
+//  case class Pin(lat: Double, lon: Double)
 
   case class Tweet(
     id: String
   )
+
+  case class Follower(screenName: String, twitterUserId: String)
 
 }

@@ -1,0 +1,57 @@
+package it.dtk.protobuf;
+
+message Article {
+    required string uri = 1;
+    required string title = 2;
+    required string description = 3;
+    repeated string categories = 4;
+    repeated string keywords = 5;
+    required string imageUrl = 6;
+    required string publisher = 7;
+    required int64 date = 8;
+    required string lang = 9;
+    required string cleanedText = 10;
+    repeated Annotation annotations = 11;
+    optional Location focusLocation = 12;
+}
+
+
+
+message Annotation {
+    required string surfaceForm = 1;
+    required string dbpediaUrl = 2;
+    required string wikipediaUrl = 3;
+    repeated AnnotationType types = 4;
+    required int64 offset = 5;
+    required int64 support = 6;
+    optional Pin pin = 7;
+
+    enum DocumentSection {
+        Title = 0;
+        Summary = 1;
+        Corpus = 2;
+        KeyWords = 3;
+        NotSet = 4;
+    }
+
+    required DocumentSection section = 8 [default = NotSet];
+}
+
+
+message Location {
+    required int64 id = 1;
+    required string cityName = 2;
+    required string provinceName = 3;
+    required string regionName = 4;
+    required Pin pin = 5;
+}
+
+message Pin {
+    required double lat = 1;
+    required double lon = 2;
+}
+
+message AnnotationType {
+    required string src = 1;
+    required string value = 2;
+}

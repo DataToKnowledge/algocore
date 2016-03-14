@@ -1,14 +1,11 @@
 package it.dtk.nlp
 
-import com.typesafe.config.Config
 import it.dtk.es.GeoFoss
-import it.dtk.model._
-
-import scala.util.Try
+import it.dtk.protobuf._
 
 /**
-  * Created by fabiofumarola on 11/02/16.
-  */
+ * Created by fabiofumarola on 11/02/16.
+ */
 class FocusLocation(elasticHosts: String, docPath: String, clusterName: String) {
 
   val gfoss = new GeoFoss(elasticHosts, docPath, clusterName)
@@ -19,7 +16,7 @@ class FocusLocation(elasticHosts: String, docPath: String, clusterName: String) 
       .exists(t => locationConsts.exists(_.contains(t.value)))
   }
 
-  def findLocations(article: Article): Map[String, (List[Annotation], Option[Location])] = {
+  def findLocations(article: Article): Map[String, (Seq[Annotation], Option[Location])] = {
 
     val candidateLocations = article.annotations
       .filter(isLocation)
@@ -28,7 +25,7 @@ class FocusLocation(elasticHosts: String, docPath: String, clusterName: String) 
 
     candidateLocations.map {
       case (name, annotations) =>
-        name ->(annotations, gfoss.findLocation(name).headOption)
+        name -> (annotations, gfoss.findLocation(name).headOption)
     }.filter(_._2._2.isDefined)
       .filter {
         case (name, (annotations, Some(loc))) =>
@@ -46,14 +43,13 @@ class FocusLocation(elasticHosts: String, docPath: String, clusterName: String) 
       case (name, (annotations, Some(location))) =>
         val score = annotations
           .map(_.offset).sum.toDouble / textSize
-        name ->(location, score)
+        name -> (location, score)
     }.toList
 
     val sortedByScore = locationsScore.sortBy(_._2._2)
 
     sortedByScore.headOption.map(_._2._1)
   }
-
 
   def close(): Unit = {
     gfoss.close()

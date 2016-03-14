@@ -4,7 +4,7 @@ import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.source.Indexable
 import com.sksamuel.elastic4s.{ ElasticClient, ElasticsearchClientUri }
 import com.typesafe.config.ConfigFactory
-import it.dtk.model._
+import it.dtk.protobuf._
 import net.ceedubs.ficus.Ficus._
 import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.index.query.MatchQueryBuilder
@@ -81,11 +81,11 @@ class GeoFoss(elasticHosts: String, docPath: String, clusterName: String) {
             Location(
               id = id.toInt,
               cityName = cityName,
-              provinceId = provId.toInt,
+              //              provinceId = provId.toInt,
               provinceName = provName,
-              regionId = regId.toInt,
+              //              regionId = regId.toInt,
               regionName = regName,
-              population = pop.toInt,
+              //              population = pop.toInt,
               pin = geoLoc.split(",").map(l => Pin(l(0), l(1))).head
             )
         }

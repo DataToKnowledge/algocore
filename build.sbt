@@ -11,9 +11,9 @@ scalacOptions ++= Seq("-target:jvm-1.8", "-feature")
 resolvers ++= Seq(
   "spray repo" at "http://repo.spray.io",
   Resolver.sonatypeRepo("public"),
+  Resolver.sonatypeRepo("snapshots"),
   Resolver.typesafeRepo("releases"),
-  Resolver.jcenterRepo,
-  "jitpack" at "https://jitpack.io"
+  Resolver.jcenterRepo
 )
 
 libraryDependencies ++= Seq(
@@ -30,7 +30,8 @@ libraryDependencies ++= Seq(
   "com.typesafe" % "config" % "1.3.0",
   "com.sksamuel.elastic4s" %% "elastic4s-core" % "2.2.0",
   "com.sksamuel.elastic4s" %% "elastic4s-jackson" % "2.2.0",
-  "com.intenthq" %% "gander" % "1.3"
+  "com.intenthq" %% "gander" % "1.3",
+  "net.sandrogrzicic" %% "scalabuff-runtime" % "1.4.0"
 )
 
 libraryDependencies ++= Seq(

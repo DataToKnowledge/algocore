@@ -4,10 +4,9 @@ import com.ning.http.client.AsyncHttpClientConfig.Builder
 import play.api.libs.ws.WSResponse
 import play.api.libs.ws.ning.NingWSClient
 
-import scala.concurrent.duration.{ FiniteDuration, _ }
-import scala.concurrent.{ Await, Future }
+import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
-import scala.util.Try
 
 /**
  * Created by fabiofumarola on 31/01/16.

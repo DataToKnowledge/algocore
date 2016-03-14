@@ -6,22 +6,24 @@ import java.nio.charset.Charset
 import java.util.Locale
 
 import com.intenthq.gander.Gander
-import com.rometools.rome.io.{ SyndFeedInput, XmlReader }
+import com.rometools.rome.io.{SyndFeedInput, XmlReader}
 import it.dtk.nlp.StopWords
+import it.dtk.protobuf._
 import org.apache.tika.language.LanguageIdentifier
 import org.apache.tika.metadata.Metadata
 import org.apache.tika.parser.html.HtmlParser
 import org.apache.tika.parser.pdf.PDFParser
 import org.apache.tika.parser.txt.TXTParser
-import org.apache.tika.parser.{ ParseContext, Parser }
+import org.apache.tika.parser.{ParseContext, Parser}
 import org.apache.tika.sax.BodyContentHandler
 import org.jsoup.Jsoup
-
+import play.api.libs.ws.WSResponse
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.collection.JavaConversions._
+import scala.concurrent.Future
+import scala.concurrent.duration._
 import scala.language.postfixOps
 import scala.util.Try
-import scala.concurrent.duration.{ FiniteDuration, _ }
-import it.dtk.protobuf._
 
 /**
  * Extract feed usig Rome
@@ -107,47 +109,76 @@ object TikaHelper {
  */
 object GanderHelper {
 
-  import TikaHelper._
-
   def extract(html: String) = Gander.extract(html)
 
+  def mainContentF(art: Article): Future[Article] = {
+
+    val pageInfoFuture = HttpDownloader.wgetF(art.uri)
+      .map(resp => GanderHelper.extract(resp.body))
+      .filter(_.isDefined)
+      .map(_.get)
+
+    pageInfoFuture.map { page =>
+
+      val description = if (page.metaDescription.nonEmpty)
+        page.metaDescription
+      else art.description
+      val date = page.publishDate.map(d => d.getTime).getOrElse(art.date)
+      val metaKeywords = page.metaKeywords
+        .split("[,\\s]+")
+        .filter(_.length > 0)
+        .filterNot(w => StopWords.isStopWord(w))
+
+      art.copy(
+        description = description,
+        keywords = art.keywords ++ metaKeywords,
+        date = date,
+        lang = page.lang.getOrElse(""),
+        cleanedText = page.cleanedText.getOrElse("")
+      )
+    }.recover {
+      case ex: Exception => art
+    }
+  }
+
+
   def mainContent(art: Article): Article = {
-    val webResponse = HttpDownloader.wget(art.uri, 5.seconds)
+    val webResponse: Option[WSResponse] = HttpDownloader.wget(art.uri, 5.seconds)
     webResponse
       .map(ws => Try(ws.body))
       .filter(t => t.isSuccess)
       .map(_.get)
       .flatMap(body => GanderHelper.extract(body))
       .map { page =>
-        val description = if (page.metaDescription.nonEmpty)
-          page.metaDescription
-        else art.description
+      val description = if (page.metaDescription.nonEmpty)
+        page.metaDescription
+      else art.description
 
-        val date = page.publishDate
-          .map(d => d.getTime).getOrElse(art.date)
+      val date = page.publishDate
+        .map(d => d.getTime).getOrElse(art.date)
 
-        val metaKeywords = page.metaKeywords.split("[,\\s]+").filter(_.length > 0)
-          .filterNot(w => StopWords.isStopWord(w))
+      val metaKeywords = page.metaKeywords.split("[,\\s]+").filter(_.length > 0)
+        .filterNot(w => StopWords.isStopWord(w))
 
-        art.copy(
-          description = description,
-          keywords = art.keywords ++ metaKeywords,
-          date = date,
-          lang = page.lang.getOrElse(""),
-          cleanedText = page.cleanedText.getOrElse("")
-        )
-      }.getOrElse {
-        if (webResponse.nonEmpty) {
-          try {
-            val (body, lang) = process(webResponse.get.body, "")
-            art.copy(cleanedText = body, lang = lang)
-          } catch {
-            case ex: Exception =>
-              art
-          }
+      art.copy(
+        description = description,
+        keywords = art.keywords ++ metaKeywords,
+        date = date,
+        lang = page.lang.getOrElse(""),
+        cleanedText = page.cleanedText.getOrElse("")
+      )
+    }.getOrElse {
+      if (webResponse.nonEmpty) {
+        try {
+          val (body, lang) = TikaHelper.process(webResponse.get.body, "")
+          art.copy(cleanedText = body, lang = lang)
+        } catch {
+          case ex: Exception =>
+            art
+        }
 
-        } else art
-      }
+      } else art
+    }
   }
 }
 

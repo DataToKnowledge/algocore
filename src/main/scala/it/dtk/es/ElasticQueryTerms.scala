@@ -62,19 +62,3 @@ class ElasticQueryTerms(hosts: String, indexPath: String, clusterName: String) {
     client.close()
   }
 }
-
-object ElasticQueryTerms {
-
-  private var pool: Option[ElasticQueryTerms] = None
-
-  def connection(hosts: String, indexPath: String, clusterName: String): ElasticQueryTerms = {
-    if (pool.isEmpty) {
-      pool = Some(new ElasticQueryTerms(hosts, indexPath, clusterName))
-    }
-    pool.get
-  }
-
-  override def finalize(): Unit = {
-    pool.foreach(_.close())
-  }
-}

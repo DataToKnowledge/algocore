@@ -8,6 +8,7 @@ import java.util.Locale
 import com.intenthq.gander.Gander
 import com.rometools.rome.io.{ SyndFeedInput, XmlReader }
 import it.dtk.nlp.StopWords
+import it.dtk.protobuf._
 import org.apache.tika.language.LanguageIdentifier
 import org.apache.tika.metadata.Metadata
 import org.apache.tika.parser.html.HtmlParser
@@ -18,10 +19,9 @@ import org.apache.tika.sax.BodyContentHandler
 import org.jsoup.Jsoup
 
 import scala.collection.JavaConversions._
+import scala.concurrent.duration._
 import scala.language.postfixOps
 import scala.util.Try
-import scala.concurrent.duration.{ FiniteDuration, _ }
-import it.dtk.protobuf._
 
 /**
  * Extract feed usig Rome

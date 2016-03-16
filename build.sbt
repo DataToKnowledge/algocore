@@ -25,7 +25,7 @@ libraryDependencies ++= Seq(
   "org.apache.tika" % "tika-parsers" % "1.12",
   "org.json4s" %% "json4s-jackson" % "3.2.11",
   "org.json4s" %% "json4s-ext" % "3.2.11",
-  "com.iheart" %% "ficus" % "1.1.3",
+  "com.iheart" %% "ficus" % "1.2.0",
   "org.apache.opennlp" % "opennlp-tools" % "1.6.0",
   "com.typesafe" % "config" % "1.3.0",
   "com.sksamuel.elastic4s" %% "elastic4s-core" % "2.2.0",

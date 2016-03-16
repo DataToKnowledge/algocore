@@ -112,7 +112,7 @@ object GanderHelper {
   def extract(html: String) = Gander.extract(html)
 
   def mainContent(art: Article): Article = {
-    val webResponse = HttpDownloader.wget(art.uri, 5.seconds)
+    val webResponse = HttpDownloader.wget(art.uri, 10.seconds)
     webResponse
       .map(ws => Try(ws.body))
       .filter(t => t.isSuccess)

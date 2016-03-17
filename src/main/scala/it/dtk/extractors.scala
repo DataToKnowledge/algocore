@@ -18,8 +18,9 @@ import org.apache.tika.parser.{ParseContext, Parser}
 import org.apache.tika.sax.BodyContentHandler
 import org.jsoup.Jsoup
 import play.api.libs.ws.WSResponse
-import scala.concurrent.ExecutionContext.Implicits.global
+
 import scala.collection.JavaConversions._
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -287,6 +288,19 @@ object QueryTermsSearch {
       val json = parse(res.body)
       (json \ "responseData" \ "results").extract[List[SearchResult]]
     }.getOrElse(List.empty[SearchResult])
+  }
+
+  /**
+    *
+    * @param url
+    * @return return a list of search Results
+    */
+  def getResultsF(url: String): Future[List[SearchResult]] = {
+    HttpDownloader.wgetF(url).map { res =>
+      val json= parse(res.body)
+      (json \ "responseData" \ "results").extract[List[SearchResult]]
+    }
+
   }
 
   def getResultsAsArticles(url: String): List[Article] =

@@ -12,7 +12,7 @@ object DBPediaTest extends App {
 
   val text = "In 48 ore ritirate 12 patenti per abuso di alcool ad Alba, Bra, Cuneo ..."
   val service = new DBpediaSpotLight(baseUrl,"it")
-  val tags = service.tagText(text)
-  tags.foreach(println)
+  val tags = service.tagTextF(text)
+  tags.andThen().foreach(println)
 //  service.http.close()
 }

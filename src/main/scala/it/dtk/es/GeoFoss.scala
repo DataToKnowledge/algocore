@@ -110,6 +110,18 @@ object GFossIndexerMainDev extends App {
   gfoss.close()
 }
 
+object GFossIndexerLinuxDev extends App {
+  val config = ConfigFactory.load("linux_dev.conf")
+  private val conf = config.getConfig("algocore.elasticsearch")
+  private val hosts = conf.as[String]("hosts")
+  private val docPath = conf.as[String]("docs.location")
+  private val clusterName = conf.as[String]("clusterName")
+
+  val gfoss = new GeoFoss(hosts, docPath, clusterName)
+  gfoss.loadInitialData()
+  gfoss.close()
+}
+
 object GFossIndexerMainProd extends App {
   val config = ConfigFactory.load("linux_prod.conf")
   private val conf = config.getConfig("algocore.elasticsearch")

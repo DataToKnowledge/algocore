@@ -6,6 +6,7 @@ import org.json4s.JsonAST.JValue
 import org.json4s.jackson.JsonMethods._
 import play.api.libs.json._
 import scala.collection.mutable
+import scala.concurrent.Future
 import scala.util.Try
 import it.dtk.protobuf.Annotation.DocumentSection
 
@@ -67,6 +68,23 @@ class DBpediaSpotLight(val baseUrl: String, val lang: String) {
     }.getOrElse(List.empty[DbPediaTag])
   }
 
+  /**
+    *
+    * @param text
+    * @param minConf
+    * @return the text annotated with the dbpedia spotlight reources
+    */
+  def tagTextF(text: String, minConf: Float = 0.15F): Future[Seq[DbPediaTag]] = {
+    val parameters = Map(
+      "text" -> Seq(text),
+      "confidence" -> Seq(minConf.toString)
+    )
+    http.wPostF(serviceUrl, headers, parameters).map{ res =>
+      val json = parse(res.body)
+      (json \ "Resources").extract[List[DbPediaTag]]
+    }
+  }
+
   def playTagText(text: String, minConf: Float = 0.15F): Seq[DbPediaTag] = {
 
     val parameters = Map(
@@ -79,6 +97,21 @@ class DBpediaSpotLight(val baseUrl: String, val lang: String) {
     http.wPost(serviceUrl, headers, parameters).map { res =>
       (res.json \ "Resources").validate[List[DbPediaTag]].get
     }.getOrElse(List.empty[DbPediaTag])
+  }
+
+
+  def playTagTextF(text: String, minConf: Float = 0.15F): Future[Seq[DbPediaTag]] = {
+
+    val parameters = Map(
+      "text" -> Seq(text),
+      "confidence" -> Seq(minConf.toString)
+    )
+
+    implicit val tagReads = Json.reads[DbPediaTag]
+
+    http.wPostF(serviceUrl, headers, parameters).map { res =>
+      (res.json \ "Resources").validate[List[DbPediaTag]].get
+    }
   }
 
   /**

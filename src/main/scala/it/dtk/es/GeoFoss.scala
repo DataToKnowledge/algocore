@@ -13,6 +13,7 @@ import org.json4s.ext.JodaTimeSerializers
 import org.json4s.jackson.JsonMethods._
 import org.json4s.jackson.Serialization
 import org.json4s.jackson.Serialization.write
+import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
 import scala.io.Source
 
@@ -33,18 +34,18 @@ class GeoFoss(elasticHosts: String, docPath: String, clusterName: String) {
 
   val client = ElasticClient.transport(settings, ElasticsearchClientUri(s"elasticsearch://$elasticHosts"))
 
-  def loadInitialData(): Unit = {
+  def loadInitialData(): Int = {
 
     val indexReq = loadCsv()
       .map(l => index into docPath id l.id source l)
 
-    implicit val duration: Duration = 360.seconds
+    implicit val duration: Duration = 60.seconds
 
     indexReq
       .grouped(200)
-      .foreach { seq =>
-        client.execute(bulk(seq)).await
-      }
+      .map(seq => client.execute(bulk(seq)).await)
+      .map(_.successes.length)
+      .sum
   }
 
   /**
@@ -65,6 +66,10 @@ class GeoFoss(elasticHosts: String, docPath: String, clusterName: String) {
         .map(s => parse(s.getSourceAsString).extract[Location])
     }.await
   }
+
+  def indexExists(): Boolean = client.execute {
+    index exists docPath
+  }.await.isExists
 
   private def loadCsv(): Iterator[Location] = {
 
@@ -97,27 +102,3 @@ class GeoFoss(elasticHosts: String, docPath: String, clusterName: String) {
     client.close()
   }
 }
-
-//object GFossIndexerMainDev extends App {
-//  val config = ConfigFactory.load("mac_dev.conf")
-//  private val conf = config.getConfig("algocore.elasticsearch")
-//  private val hosts = conf.as[String]("hosts")
-//  private val docPath = conf.as[String]("docs.location")
-//  private val clusterName = conf.as[String]("clusterName")
-//
-//  val gfoss = new GeoFoss(hosts, docPath, clusterName)
-//  gfoss.loadInitialData()
-//  gfoss.close()
-//}
-//
-//object GFossIndexerMainProd extends App {
-//  val config = ConfigFactory.load("linux_prod.conf")
-//  private val conf = config.getConfig("algocore.elasticsearch")
-//  private val hosts = conf.as[String]("hosts")
-//  private val docPath = conf.as[String]("docs.location")
-//  private val clusterName = conf.as[String]("clusterName")
-//
-//  val gfoss = new GeoFoss(hosts, docPath, clusterName)
-//  gfoss.loadInitialData()
-//  gfoss.close()
-//}

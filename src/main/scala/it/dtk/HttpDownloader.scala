@@ -1,5 +1,7 @@
 package it.dtk
 
+import java.io.File
+
 import com.ning.http.client.AsyncHttpClientConfig.Builder
 import play.api.libs.ws.WSResponse
 import play.api.libs.ws.ning.NingWSClient
@@ -61,9 +63,13 @@ object HttpDownloader {
         None
     }
 
+  def wPut(url: String, filePath: String): Future[WSResponse] = {
+    ws.url(url).put(new File(filePath))
+  }
+
+  def wDelete(url: String): Future[WSResponse] = {
+    ws.url(url).delete()
+  }
+
   def close() = ws.close()
-  //
-  //  override def finalize(): Unit = {
-  //    close()
-  //  }
 }

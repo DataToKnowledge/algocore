@@ -4,7 +4,7 @@ organization := "it.datatoknowledge"
 
 version := "0.2.0"
 
-scalaVersion := "2.11.6"
+scalaVersion := "2.11.7"
 
 scalacOptions ++= Seq("-target:jvm-1.8", "-feature")
 

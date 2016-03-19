@@ -167,7 +167,7 @@ object DBpedia {
     http.wget(dbpediaUrl + jsonld).map(r => parse(r.body))
   }
 
-  val filters = "http" :: "DUL" :: "gml" :: "owl" :: Nil
+  val filters = "Http" :: "DUL" :: "gml" :: "owl" :: "Schema" :: "List(" :: Nil
 
   def filter(raw: String): List[AnnotationType] =
     filter(raw.split(",").toList)

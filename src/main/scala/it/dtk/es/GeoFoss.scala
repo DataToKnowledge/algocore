@@ -72,10 +72,9 @@ class GeoFoss(elasticHosts: String, docPath: String, clusterName: String) {
   }.await.isExists
 
   private def loadCsv(): Iterator[Location] = {
+    val in = this.getClass.getResourceAsStream("/gfossdata.csv")
 
-    val path = this.getClass.getResource("/gfossdata.csv")
-
-    val locations = Source.fromFile(path.getFile)
+    val locations = Source.fromInputStream(in)
       .getLines()
       .map(_.split("\\|"))
       .filter(_.length == 12)

@@ -1,10 +1,13 @@
 package it.dtk.es
 
+import java.nio.file.Files
+
 import it.dtk.HttpDownloader
 import play.api.libs.ws.WSResponse
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
+import scala.io.Source
 
 /**
  * Created by fabiofumarola on 17/03/16.
@@ -26,8 +29,10 @@ class ElasticAdmin(adminHost: String, esHosts: String,
   }
 
   def createIndex(): Boolean = {
-    val path = this.getClass.getResource("/elastic_mappings.json").getFile
-    val res = Await.result(HttpDownloader.wPut(url, path), 10.seconds)
+    val in = this.getClass.getResourceAsStream("/elastic_mappings.json")
+    val body = Source.fromInputStream(in).mkString
+
+    val res = Await.result(HttpDownloader.wPut(url, body), 10.seconds)
     isError(res)
   }
 

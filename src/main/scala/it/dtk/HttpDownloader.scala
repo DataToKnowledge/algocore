@@ -63,8 +63,8 @@ object HttpDownloader {
         None
     }
 
-  def wPut(url: String, filePath: String): Future[WSResponse] = {
-    ws.url(url).put(new File(filePath))
+  def wPut(url: String, body: String): Future[WSResponse] = {
+    ws.url(url).put(body)
   }
 
   def wDelete(url: String): Future[WSResponse] = {

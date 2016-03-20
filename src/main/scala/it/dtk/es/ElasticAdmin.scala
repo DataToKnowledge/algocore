@@ -50,11 +50,11 @@ class ElasticAdmin(adminHost: String, esHosts: String,
     if (!existIndex()) {
       if (createIndex()) {
         println("Successfully create the main index")
-        println(s"load $loadGFossData locations")
-        println("finish init WhereTolive Index")
       }
     } else {
       println("the index exists!!! delete it before")
     }
+    println(s"load $loadGFossData locations")
+    println("finish init WhereTolive Index")
   }
 }

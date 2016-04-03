@@ -14,8 +14,7 @@ object model {
   case class SchedulerData(
     nextRange: FiniteDuration = 30 minutes,
     deltaRange: FiniteDuration = 5 minutes,
-    time: DateTime = DateTime.now
-  )
+    time: DateTime = DateTime.now)
 
   /**
    * helper companion object to setup the next schedule
@@ -24,15 +23,15 @@ object model {
     def next(scheduler: SchedulerData, extractedUrls: Int) = {
       val now = DateTime.now
       extractedUrls match {
-        case 0 =>
+        case 0 ⇒
           val nextRange = scheduler.nextRange + scheduler.deltaRange
           val time = now plus nextRange.toMillis
           scheduler.copy(nextRange = nextRange, time = time)
 
-        case x if x < 5 =>
+        case x if x < 5 ⇒
           scheduler.copy(time = now plus scheduler.nextRange.toMillis)
 
-        case x if x > 5 =>
+        case x if x > 5 ⇒
           val nextRange = if (scheduler.nextRange > 5.minutes) {
             scheduler.nextRange - scheduler.deltaRange
           } else scheduler.nextRange
@@ -42,7 +41,6 @@ object model {
   }
 
   /**
-   *
    * @param url is the id for the feed
    * @param publisher
    * @param parsedUrls
@@ -56,14 +54,12 @@ object model {
     parsedUrls: List[String],
     lastTime: Option[DateTime],
     count: Long = 0,
-    schedulerData: SchedulerData = SchedulerData()
-  )
+    schedulerData: SchedulerData = SchedulerData())
 
   case class QueryTerm(
     terms: List[String],
     lang: String = "it",
-    timestamp: Option[DateTime] = Some(DateTime.now().minusMinutes(10))
-  )
+    timestamp: Option[DateTime] = Some(DateTime.now().minusMinutes(10)))
 
   case class News(
     uri: String,
@@ -76,51 +72,20 @@ object model {
     date: DateTime,
     lang: String = "",
     text: String = "",
-    annotations: Seq[Annotation],
-    focusLocation: Option[Location]
-  )
+    annotations: Seq[SemanticTag],
+    focusLocation: Option[Location])
 
-  //    object DocumentSection extends Enumeration {
-  //      type DocumentSection = Value
-  //      val Title, Summary, Corpus, KeyWords, NotSet = Value
-  //    }
-  //
-  //    case class Annotation(
-  //      surfaceForm: String,
-  //      dbpediaUrl: String,
-  //      wikipediUrl: String,
-  //      `types`: Seq[AnnotationType],
-  //      offset: Int,
-  //      support: Int,
-  //      pin: Option[Pin] = None,
-  //      section: String = DocumentSection.NotSet.toString
-  //    )
-  //
-  //    /**
-  //     *
-  //     * Given a raw annotation of the type "DBpedia:Location,Schema:Place,DBpedia:Place,Wikidata:Q486972,DBpedia:PopulatedPlace"
-  //     *
-  //     * @param src   the source of the annotation type, examples: DBPedia, Schema, Wikidata, DUL
-  //     * @param value the value of the annotation type, examples: Location, Place, PopulatedPlace
-  //     */
-  //    case class AnnotationType(src: String, value: String)
-  //
-  //    case class Location(
-  //      id: Int,
-  //      cityName: String,
-  //      //    provinceId: Int,
-  //      provinceName: String,
-  //      //    regionId: Int,
-  //      regionName: String,
-  //      //    population: Int,
-  //      pin: Pin
-  //    )
+  case class SemanticTag(
+    name: String,
+    wikipediaUrl: String,
+    tags: Set[String],
+    pin: Option[it.dtk.protobuf.Pin],
+    support: Long)
 
   case class Pin(lat: Double, lon: Double)
 
   case class Tweet(
-    id: String
-  )
+    id: String)
 
   case class Follower(screenName: String, twitterUserId: String)
 

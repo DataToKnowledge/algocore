@@ -10,21 +10,21 @@ import scala.util.Try
 import it.dtk.protobuf.Annotation.DocumentSection
 
 case class DbPediaTag(
-  `@URI`: String,
-  `@support`: String,
-  `@types`: String,
-  `@surfaceForm`: String,
-  `@offset`: String,
-  `@similarityScore`: String,
-  `@percentageOfSecondRank`: String
-)
+                       `@URI`: String,
+                       `@support`: String,
+                       `@types`: String,
+                       `@surfaceForm`: String,
+                       `@offset`: String,
+                       `@similarityScore`: String,
+                       `@percentageOfSecondRank`: String
+                     )
 
 /**
- * Query a dbpedia spotlight service
- *
- * @param baseUrl
- * @param lang
- */
+  * Query a dbpedia spotlight service
+  *
+  * @param baseUrl
+  * @param lang
+  */
 class DBpediaSpotLight(val baseUrl: String, val lang: String) {
 
   val serviceUrl = s"$baseUrl/rest/annotate"
@@ -43,11 +43,11 @@ class DBpediaSpotLight(val baseUrl: String, val lang: String) {
   implicit val formats = org.json4s.DefaultFormats
 
   /**
-   *
-   * @param text
-   * @param minConf
-   * @return the text annotated with the dbpedia spotlight reources
-   */
+    *
+    * @param text
+    * @param minConf
+    * @return the text annotated with the dbpedia spotlight reources
+    */
   def tagText(text: String, minConf: Float = 0.15F): Seq[DbPediaTag] = {
     val parameters = Map(
       "text" -> Seq(text),
@@ -82,11 +82,11 @@ class DBpediaSpotLight(val baseUrl: String, val lang: String) {
   }
 
   /**
-   *
-   * @param text
-   * @param minConf
-   * @return return text annotated as Seq[Annotation]
-   */
+    *
+    * @param text
+    * @param minConf
+    * @return return text annotated as Seq[Annotation]
+    */
   def annotateText(text: String, section: DocumentSection.EnumVal, minConf: Float = 0.15F): Seq[Annotation] = {
     val annotations = tagText(text, minConf).map { tag =>
       Annotation(
@@ -105,9 +105,9 @@ class DBpediaSpotLight(val baseUrl: String, val lang: String) {
   }
 
   /**
-   * @param a annotation
-   * @return other annotation extracted using DBpedia website
-   */
+    * @param a annotation
+    * @return other annotation extracted using DBpedia website
+    */
   def enrichAnnotation(a: Annotation): Annotation = {
     val t = Try {
       val optJson = DBpedia.getResource(a.dbpediaUrl)
@@ -139,9 +139,9 @@ class DBpediaSpotLight(val baseUrl: String, val lang: String) {
 }
 
 /**
- * Query dbpedia to extract additional annotations
- * example of resource queried http://it.dbpedia.org/resource/Capurso/html?output=application%2Fld%2Bjson
- */
+  * Query dbpedia to extract additional annotations
+  * example of resource queried http://it.dbpedia.org/resource/Capurso/html?output=application%2Fld%2Bjson
+  */
 object DBpedia {
 
   private val pool = mutable.Map.empty[String, DBpediaSpotLight]
@@ -159,10 +159,10 @@ object DBpedia {
   val http = HttpDownloader
 
   /**
-   *
-   * @param dbpediaUrl
-   * @return
-   */
+    *
+    * @param dbpediaUrl
+    * @return
+    */
   def getResource(dbpediaUrl: String): Option[JValue] = {
     http.wget(dbpediaUrl + jsonld).map(r => parse(r.body))
   }
@@ -177,14 +177,14 @@ object DBpedia {
       filters.exists(p => e.contains(p))
     }.map(_.split(":"))
       .filter(_.length == 2)
-      .map(array => AnnotationType(array(0), array(1)))
+      .map(array => AnnotationType(array(0).trim, array(1).replace(")", "")))
   }
 
   /**
-   *
-   * @param json
-   * @return the types extract from the dbpedia result
-   */
+    *
+    * @param json
+    * @return the types extract from the dbpedia result
+    */
   def getTypes(json: JValue): List[AnnotationType] = {
     val cand = (json \ "@graph" \ "@type").values match {
       case list: List[String] => list

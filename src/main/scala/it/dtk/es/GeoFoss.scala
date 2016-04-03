@@ -2,7 +2,7 @@ package it.dtk.es
 
 import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.source.Indexable
-import com.sksamuel.elastic4s.{ ElasticClient, ElasticsearchClientUri }
+import com.sksamuel.elastic4s.{ElasticClient, ElasticsearchClientUri}
 import com.typesafe.config.ConfigFactory
 import it.dtk.protobuf._
 import net.ceedubs.ficus.Ficus._
@@ -18,8 +18,8 @@ import scala.concurrent.duration._
 import scala.io.Source
 
 /**
- * Created by fabiofumarola on 08/02/16.
- */
+  * Created by fabiofumarola on 08/02/16.
+  */
 class GeoFoss(elasticHosts: String, docPath: String, clusterName: String) {
 
   import scala.concurrent.ExecutionContext.Implicits.global
@@ -49,11 +49,11 @@ class GeoFoss(elasticHosts: String, docPath: String, clusterName: String) {
   }
 
   /**
-   *
-   * @param name
-   * @param maxCount
-   * @return a location by name
-   */
+    *
+    * @param name
+    * @param maxCount
+    * @return a location by name
+    */
   def findLocation(name: String, maxCount: Int = 1): Seq[Location] = {
     val query = client.execute {
       search in docPath limit maxCount query {
@@ -81,7 +81,8 @@ class GeoFoss(elasticHosts: String, docPath: String, clusterName: String) {
       .map { split =>
         split match {
           case Array(id, istatId, cityName, provId, provName, regId, regName,
-            pop, srcId, wikiUrl, geoUrl, geoLoc) =>
+          pop, srcId, wikiUrl, geoUrl, geoLoc) =>
+
             Location(
               id = id.toInt,
               cityName = cityName,
@@ -90,7 +91,10 @@ class GeoFoss(elasticHosts: String, docPath: String, clusterName: String) {
               //              regionId = regId.toInt,
               regionName = regName,
               //              population = pop.toInt,
-              pin = geoLoc.split(",").map(l => Pin(l(0), l(1))).head
+              pin = geoLoc.split(",") match {
+                case Array(lat, lon) =>
+                  Pin(lat.toDouble, lon.toDouble)
+              }
             )
         }
       }

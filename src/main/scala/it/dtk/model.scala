@@ -14,7 +14,8 @@ object model {
   case class SchedulerData(
     nextRange: FiniteDuration = 30 minutes,
     deltaRange: FiniteDuration = 5 minutes,
-    time: DateTime = DateTime.now)
+    time: DateTime = DateTime.now
+  )
 
   /**
    * helper companion object to setup the next schedule
@@ -54,12 +55,14 @@ object model {
     parsedUrls: List[String],
     lastTime: Option[DateTime],
     count: Long = 0,
-    schedulerData: SchedulerData = SchedulerData())
+    schedulerData: SchedulerData = SchedulerData()
+  )
 
   case class QueryTerm(
     terms: List[String],
     lang: String = "it",
-    timestamp: Option[DateTime] = Some(DateTime.now().minusMinutes(10)))
+    timestamp: Option[DateTime] = Some(DateTime.now().minusMinutes(10))
+  )
 
   case class News(
     uri: String,
@@ -73,19 +76,22 @@ object model {
     lang: String = "",
     text: String = "",
     annotations: Seq[SemanticTag],
-    focusLocation: Option[Location])
+    focusLocation: Option[Location]
+  )
 
   case class SemanticTag(
     name: String,
     wikipediaUrl: String,
     tags: Set[String],
     pin: Option[it.dtk.protobuf.Pin],
-    support: Long)
+    support: Long
+  )
 
   case class Pin(lat: Double, lon: Double)
 
   case class Tweet(
-    id: String)
+    id: String
+  )
 
   case class Follower(screenName: String, twitterUserId: String)
 

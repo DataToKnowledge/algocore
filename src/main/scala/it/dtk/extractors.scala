@@ -253,6 +253,13 @@ object QueryTermsSearch {
     starts.map(start => baseUrl + start)
   }
 
+  def generateUrl(query: List[String], lang: String, ipAddress: String): String = {
+    val urlQuery = query.mkString("%20")
+    val baseUrl = s"https://ajax.googleapis.com/ajax/services/search/news?v=1.0" +
+      s"&q=$urlQuery&hl=$lang&rsz=8&scoring=d&userip=$ipAddress&start=0"
+    baseUrl
+  }
+
   /**
     *
     * @param url

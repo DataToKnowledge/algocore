@@ -101,6 +101,12 @@
           "type": "string",
           "analyzer": "italian"
         },
+        "pin": {
+          "type": "geo_point",
+          "geohash": true,
+          "lat_lon": true,
+          "geohash_precision": "100m"
+        },
         "annotations": {
           "type": "nested",
           "properties": {

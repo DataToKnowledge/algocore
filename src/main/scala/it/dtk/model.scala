@@ -76,7 +76,8 @@ object model {
     lang: String = "",
     text: String = "",
     annotations: Seq[SemanticTag],
-    focusLocation: Option[Location]
+    focusLocation: Option[Location],
+    pin: Option[it.dtk.protobuf.Pin]
   )
 
   case class SemanticTag(

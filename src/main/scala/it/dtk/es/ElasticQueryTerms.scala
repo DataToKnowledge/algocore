@@ -3,6 +3,7 @@ package it.dtk.es
 import com.sksamuel.elastic4s.source.Indexable
 import com.sksamuel.elastic4s._
 import org.elasticsearch.common.settings.Settings
+import org.elasticsearch.search.sort.SortOrder
 import org.json4s.NoTypeHints
 import it.dtk.model._
 import org.json4s._
@@ -43,6 +44,12 @@ class ElasticQueryTerms(hosts: String, indexPath: String, clusterName: String) {
   def bulkCreateUpdate(seq: Seq[QueryTerm])(implicit ex: ExecutionContext): Future[BulkResult] = {
     val req = seq.map(q => index into indexPath id q.terms.mkString("_") source q)
     client.execute(bulk(req))
+  }
+
+  def queryTermsSortedDesc(): SearchDefinition ={
+    search in indexPath query matchAllQuery sort {
+      fieldSort("timestamp") order SortOrder.DESC
+    }
   }
 
   /**

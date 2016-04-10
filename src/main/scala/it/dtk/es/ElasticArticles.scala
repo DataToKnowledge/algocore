@@ -53,7 +53,7 @@ class ElasticArticles(hosts: String, searchHost: String, indexPath: String, clus
   //  }
 
   def rawQuery(data: JValue)(implicit ex: ExecutionContext): Future[JValue] = {
-    val url = s"httt://$searchHost/wtl/articles/_search"
+    val url = s"http://$searchHost/wtl/articles/_search"
     val json = Json.parse(pretty(render(data)))
     HttpDownloader.ws.url(url).post(json).map { res =>
       parse(res.body, false)

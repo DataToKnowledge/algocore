@@ -46,7 +46,7 @@ class ElasticQueryTerms(hosts: String, indexPath: String, clusterName: String) {
     client.execute(bulk(req))
   }
 
-  def queryTermsSortedDesc(): SearchDefinition ={
+  def queryTermsSortedDesc(): SearchDefinition = {
     search in indexPath query matchAllQuery sort {
       fieldSort("timestamp") order SortOrder.DESC
     }

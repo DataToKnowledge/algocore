@@ -38,9 +38,10 @@ class ElasticAdmin(adminHost: String, esHosts: String,
   }
 
   def createNewsIndex(): Boolean = {
-    val in = this.getClass.getResourceAsStream("/wtl_mappings.json")
+    val in = this.getClass.getResourceAsStream("/articles_mappings.json")
     val body = Source.fromInputStream(in).mkString
-    val res = Await.result(HttpDownloader.wPut(urlWtl, body), 10.seconds)
+    val res = Await.result(HttpDownloader.wPut(urlArticles, body), 10.seconds)
+    println(res.body)
     in.close()
     isError(res)
   }
@@ -52,17 +53,17 @@ class ElasticAdmin(adminHost: String, esHosts: String,
     res
   }
 
-  private def isError(res: WSResponse) = !res.body.contains("404")
+  private def isError(res: WSResponse) = !res.body.contains("error")
 
   def initWhereToLive(): Unit = {
 
     if (!existIndex(urlWtl)) {
       if (createWtlIndex()) {
-        println("Successfully create the main index")
+        println("Successfully created the main index")
         println(s"load ${loadGFossData()} locations")
       }
       if (createNewsIndex()) {
-        println("Successfully create the articles index")
+        println("Successfully created the articles index")
       }
     } else {
       println("the index exists!!! delete it before")

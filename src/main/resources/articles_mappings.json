@@ -76,21 +76,21 @@
         },
         "categories": {
           "type": "string",
-          "index": "simple",
+          "analyzer": "simple",
           "fields": {
             "lower": {
               "type": "string",
-              "analyzer": "not_analyzed"
+              "index": "not_analyzed"
             }
           }
         },
         "keywords": {
           "type": "string",
-          "index": "simple",
+          "analyzer": "simple",
           "fields": {
             "lower": {
               "type": "string",
-              "analyzer": "not_analyzed"
+              "index": "not_analyzed"
             }
           }
         },
@@ -133,51 +133,51 @@
         },
         "crimes": {
           "type": "string",
-          "index": "simple",
+          "analyzer": "simple",
           "fields": {
             "lower": {
               "type": "string",
-              "analyzer": "not_analyzed"
+              "index": "not_analyzed"
             }
           }
         },
         "locations": {
           "type": "string",
-          "index": "simple",
+          "analyzer": "simple",
           "fields": {
             "lower": {
               "type": "string",
-              "analyzer": "not_analyzed"
+              "index": "not_analyzed"
             }
           }
         },
         "persons": {
           "type": "string",
-          "index": "not_analyzed",
+          "analyzer": "simple",
           "fields": {
             "lower": {
               "type": "string",
-              "analyzer": "simple"
+              "index": "not_analyzed"
             }
           }
         },
         "semanticNames": {
           "type": "string",
-          "index": "not_analyzed",
+          "analyzer": "simple",
           "fields": {
             "lower": {
               "type": "string",
-              "analyzer": "simple"
+              "index": "not_analyzed"
             }
           }
         },
         "semanticTags": {
           "type": "string",
-          "index": "not_analyzed",
+          "analyzer": "simple",
           "fields": {
             "lower": {
               "type": "string",
-              "analyzer": "simple"
+              "index": "not_analyzed"
             }
           }
         },

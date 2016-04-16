@@ -28,28 +28,6 @@ class ElasticArticles(hosts: String, searchHost: String, indexPath: String, clus
     index exists indexPath
   }.await.isExists
 
-  def rawQuery(rawQuery: String)(implicit ex: ExecutionContext): Future[JValue] = {
-    val query = search in indexPath rawQuery rawQuery
-
-    client.execute(query)
-      .map(r => parse(r.original.toString, false))
-  }
-
-  //  def rawQuery(jsonReq: JValue)(implicit ex: ExecutionContext): Future[JValue] = {
-  //    val parsed = ParsedQuery(jsonReq)
-  //    val query = search.in(indexPath).rawQuery(parsed.query)
-  //
-  //    parsed.sources.foreach(s => query.sourceInclude(s: _*))
-  //    parsed.from.foreach(query.from)
-  //    parsed.size.foreach(query.size)
-  //
-  //    val sorted = parsed.sort.map(e => fieldSort(e.field).order(e.sort))
-  //    query.sort(sorted: _*)
-  //
-  //    client.execute(query)
-  //      .map(r => parse(r.original.toString, false))
-  //  }
-
   def rawQuery(data: JValue)(implicit ex: ExecutionContext): Future[JValue] = {
     val url = s"http://$searchHost/wtl/articles/_search"
     val json = Json.parse(pretty(render(data)))

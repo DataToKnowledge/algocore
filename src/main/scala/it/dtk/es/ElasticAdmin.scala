@@ -15,24 +15,34 @@ import scala.io.Source
 class ElasticAdmin(adminHost: String, esHosts: String,
     gFossPath: String, clusterName: String) {
 
-  val url = s"http://$adminHost:9200/wtl"
+  val urlWtl = s"http://$adminHost:9200/wtl"
+  val urlArticles = s"http://$adminHost:9200/news"
 
   def deleteIndex(): Boolean = {
-    val res = Await.result(HttpDownloader.wDelete(url), 10.seconds)
+    val res = Await.result(HttpDownloader.wDelete(urlArticles), 10.seconds)
     isError(res)
   }
 
-  def existIndex(): Boolean = {
+  def existIndex(url: String): Boolean = {
     HttpDownloader.wget(url)
       .map(res => !res.body.contains("404"))
       .getOrElse(true)
   }
 
-  def createIndex(): Boolean = {
-    val in = this.getClass.getResourceAsStream("/elastic_mappings.json")
+  def createWtlIndex(): Boolean = {
+    val in = this.getClass.getResourceAsStream("/wtl_mappings.json")
     val body = Source.fromInputStream(in).mkString
+    val res = Await.result(HttpDownloader.wPut(urlWtl, body), 10.seconds)
+    in.close()
+    isError(res)
+  }
 
-    val res = Await.result(HttpDownloader.wPut(url, body), 10.seconds)
+  def createNewsIndex(): Boolean = {
+    val in = this.getClass.getResourceAsStream("/articles_mappings.json")
+    val body = Source.fromInputStream(in).mkString
+    val res = Await.result(HttpDownloader.wPut(urlArticles, body), 10.seconds)
+    println(res.body)
+    in.close()
     isError(res)
   }
 
@@ -43,14 +53,17 @@ class ElasticAdmin(adminHost: String, esHosts: String,
     res
   }
 
-  private def isError(res: WSResponse) = !res.body.contains("404")
+  private def isError(res: WSResponse) = !res.body.contains("error")
 
   def initWhereToLive(): Unit = {
 
-    if (!existIndex()) {
-      if (createIndex()) {
-        println("Successfully create the main index")
-        println(s"load $loadGFossData locations")
+    if (!existIndex(urlWtl)) {
+      if (createWtlIndex()) {
+        println("Successfully created the main index")
+        println(s"load ${loadGFossData()} locations")
+      }
+      if (createNewsIndex()) {
+        println("Successfully created the articles index")
       }
     } else {
       println("the index exists!!! delete it before")

@@ -64,7 +64,7 @@ object model {
     timestamp: Option[DateTime] = Some(DateTime.now().minusMinutes(10))
   )
 
-  case class News(
+  case class FlattenedNews(
     uri: String,
     title: String,
     description: String,
@@ -75,8 +75,15 @@ object model {
     date: DateTime,
     lang: String = "",
     text: String = "",
+    cityName: String = "",
+    provinceName: String = "",
+    regionName: String = "",
+    crimes: Seq[String],
+    locations: Seq[String],
+    persons: Seq[String],
+    semanticNames: Seq[String],
+    semanticTags: Seq[String],
     annotations: Seq[SemanticTag],
-    focusLocation: Option[Location],
     pin: Option[it.dtk.protobuf.Pin]
   )
 

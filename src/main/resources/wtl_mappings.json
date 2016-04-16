@@ -1,0 +1,90 @@
+{
+  "settings": {
+    "analysis": {
+      "filter": {
+        "italian_elision": {
+          "type": "elision",
+          "articles": [
+            "c",
+            "l",
+            "all",
+            "dall",
+            "dell",
+            "nell",
+            "sull",
+            "coll",
+            "pell",
+            "gl",
+            "agl",
+            "dagl",
+            "degl",
+            "negl",
+            "sugl",
+            "un",
+            "m",
+            "t",
+            "s",
+            "v",
+            "d"
+          ]
+        },
+        "italian_stop": {
+          "type": "stop",
+          "stopwords": "_italian_"
+        },
+        "italian_stemmer": {
+          "type": "stemmer",
+          "language": "light_italian"
+        }
+      },
+      "analyzer": {
+        "italian": {
+          "tokenizer": "standard",
+          "filter": [
+            "italian_elision",
+            "lowercase",
+            "italian_stop",
+            "italian_stemmer"
+          ],
+          "char_filter": [
+            "html_strip"
+          ]
+        },
+        "not_analyzed_lower": {
+          "tokenizer": "keyword",
+          "filter": [
+            "lowercase"
+          ]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "locations": {
+      "properties": {
+        "id": {
+          "type": "integer",
+          "index": "no"
+        },
+        "cityName": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "provinceName": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "regionName": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "pin": {
+          "type": "geo_point",
+          "geohash": true,
+          "lat_lon": true,
+          "geohash_precision": "100m"
+        }
+      }
+    }
+  }
+}

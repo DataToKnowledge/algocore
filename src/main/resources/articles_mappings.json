@@ -76,21 +76,21 @@
         },
         "categories": {
           "type": "string",
-          "index": "not_analyzed",
+          "analyzer": "simple",
           "fields": {
             "lower": {
               "type": "string",
-              "analyzer": "simple"
+              "index": "not_analyzed"
             }
           }
         },
         "keywords": {
           "type": "string",
-          "index": "not_analyzed",
+          "analyzer": "simple",
           "fields": {
             "lower": {
               "type": "string",
-              "analyzer": "simple"
+              "index": "not_analyzed"
             }
           }
         },
@@ -109,7 +109,7 @@
           "type": "string",
           "index": "not_analyzed"
         },
-        "cleanedText": {
+        "text": {
           "type": "string",
           "analyzer": "italian"
         },
@@ -118,6 +118,68 @@
           "geohash": true,
           "lat_lon": true,
           "geohash_precision": "100m"
+        },
+        "cityName": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "provinceName": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "regionName": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "crimes": {
+          "type": "string",
+          "analyzer": "simple",
+          "fields": {
+            "lower": {
+              "type": "string",
+              "index": "not_analyzed"
+            }
+          }
+        },
+        "locations": {
+          "type": "string",
+          "analyzer": "simple",
+          "fields": {
+            "lower": {
+              "type": "string",
+              "index": "not_analyzed"
+            }
+          }
+        },
+        "persons": {
+          "type": "string",
+          "analyzer": "simple",
+          "fields": {
+            "lower": {
+              "type": "string",
+              "index": "not_analyzed"
+            }
+          }
+        },
+        "semanticNames": {
+          "type": "string",
+          "analyzer": "simple",
+          "fields": {
+            "lower": {
+              "type": "string",
+              "index": "not_analyzed"
+            }
+          }
+        },
+        "semanticTags": {
+          "type": "string",
+          "analyzer": "simple",
+          "fields": {
+            "lower": {
+              "type": "string",
+              "index": "not_analyzed"
+            }
+          }
         },
         "annotations": {
           "type": "nested",
@@ -206,32 +268,6 @@
               "geohash_precision": "100m"
             }
           }
-        }
-      }
-    },
-    "locations": {
-      "properties": {
-        "id": {
-          "type": "integer",
-          "index": "no"
-        },
-        "cityName": {
-          "type": "string",
-          "index": "not_analyzed"
-        },
-        "provinceName": {
-          "type": "string",
-          "index": "not_analyzed"
-        },
-        "regionName": {
-          "type": "string",
-          "index": "not_analyzed"
-        },
-        "pin": {
-          "type": "geo_point",
-          "geohash": true,
-          "lat_lon": true,
-          "geohash_precision": "100m"
         }
       }
     }

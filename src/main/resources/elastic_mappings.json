@@ -76,11 +76,23 @@
         },
         "categories": {
           "type": "string",
-          "index": "not_analyzed"
+          "index": "not_analyzed",
+          "fields": {
+            "lower": {
+              "type": "string",
+              "analyzer": "simple"
+            }
+          }
         },
         "keywords": {
           "type": "string",
-          "index": "not_analyzed"
+          "index": "not_analyzed",
+          "fields": {
+            "lower": {
+              "type": "string",
+              "analyzer": "simple"
+            }
+          }
         },
         "imageUrl": {
           "type": "string",

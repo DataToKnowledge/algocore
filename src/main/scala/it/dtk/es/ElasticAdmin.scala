@@ -15,8 +15,8 @@ import scala.io.Source
 class ElasticAdmin(adminHost: String, esHosts: String,
     gFossPath: String, clusterName: String) {
 
-  val urlWtl = s"http://$adminHost:9200/wtl"
-  val urlArticles = s"http://$adminHost:9200/news"
+  val urlWtl = s"http://$adminHost:9200/wtl1"
+  val urlArticles = s"http://$adminHost:9200/news1"
 
   def deleteIndex(): Boolean = {
     val res = Await.result(HttpDownloader.wDelete(urlArticles), 10.seconds)

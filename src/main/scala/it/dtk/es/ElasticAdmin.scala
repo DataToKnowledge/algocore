@@ -15,7 +15,7 @@ import scala.io.Source
 class ElasticAdmin(adminHost: String, esHosts: String,
     gFossPath: String, clusterName: String) {
 
-  val urlWtl = s"http://$adminHost:9200/wtl"
+  val urlWtl = s"http://$adminHost:9200/wtl1"
   val urlArticles = s"http://$adminHost:9200/news"
 
   def deleteIndex(): Boolean = {

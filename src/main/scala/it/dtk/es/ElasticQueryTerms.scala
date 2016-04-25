@@ -21,10 +21,7 @@ import scala.concurrent.{ ExecutionContext, Future }
 class ElasticQueryTerms(hosts: String, indexPath: String, clusterName: String) {
   implicit val formats = Serialization.formats(NoTypeHints) ++ JodaTimeSerializers.all
 
-  private val settings = Settings.settingsBuilder()
-    .put("cluster.name", clusterName).build()
-
-  val client = ElasticClient.transport(settings, ElasticsearchClientUri(s"elasticsearch://$hosts"))
+  val client = elasticClient(hosts, clusterName)
 
   implicit object QueryTermsHitAs extends HitAs[QueryTerm] {
     override def as(hit: RichSearchHit): QueryTerm = {

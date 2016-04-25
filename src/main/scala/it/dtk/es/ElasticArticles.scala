@@ -19,10 +19,7 @@ import scala.concurrent.{ ExecutionContext, Future }
 class ElasticArticles(hosts: String, searchHost: String, indexPath: String, clusterName: String) {
   implicit val formats = Serialization.formats(NoTypeHints) ++ JodaTimeSerializers.all
 
-  private val settings = Settings.settingsBuilder()
-    .put("cluster.name", clusterName).build()
-
-  val client = ElasticClient.transport(settings, ElasticsearchClientUri(s"elasticsearch://$hosts"))
+  val client = elasticClient(hosts, clusterName)
 
   def indexExists(implicit ex: ExecutionContext): Boolean = client.execute {
     index exists indexPath

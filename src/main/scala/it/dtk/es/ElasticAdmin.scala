@@ -1,6 +1,5 @@
 package it.dtk.es
 
-import java.nio.file.Files
 
 import it.dtk.HttpDownloader
 import play.api.libs.ws.WSResponse

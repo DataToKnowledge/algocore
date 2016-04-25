@@ -20,7 +20,7 @@ import scala.io.Source
 /**
  * Created by fabiofumarola on 08/02/16.
  */
-class GeoFoss(elasticHosts: String, docPath: String, clusterName: String) {
+class GeoFoss(hosts: String, docPath: String, clusterName: String) {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -30,9 +30,7 @@ class GeoFoss(elasticHosts: String, docPath: String, clusterName: String) {
     override def json(l: Location): String = write(l)
   }
 
-  private val settings = Settings.settingsBuilder().put("cluster.name", clusterName).build()
-
-  val client = ElasticClient.transport(settings, ElasticsearchClientUri(s"elasticsearch://$elasticHosts"))
+  val client = elasticClient(hosts, clusterName)
 
   def loadInitialData(): Int = {
 
@@ -94,8 +92,7 @@ class GeoFoss(elasticHosts: String, docPath: String, clusterName: String) {
               pin = geoLoc.split(",") match {
                 case Array(lat, lon) =>
                   Pin(lat.toDouble, lon.toDouble)
-              }
-            )
+              })
         }
       }
     locations

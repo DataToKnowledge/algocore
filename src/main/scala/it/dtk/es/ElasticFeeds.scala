@@ -19,7 +19,7 @@ import scala.concurrent.{ ExecutionContext, Future }
 class ElasticFeeds(hosts: String, indexPath: String, clusterName: String) {
   implicit val formats = Serialization.formats(NoTypeHints) ++ JodaTimeSerializers.all
 
-  val client = elasticClient(hosts, clusterName)
+  val client = ESUtil.elasticClient(hosts, clusterName)
 
   implicit object FeedHitAs extends HitAs[Feed] {
     override def as(hit: RichSearchHit): Feed = {

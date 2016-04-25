@@ -30,7 +30,7 @@ class GeoFoss(hosts: String, docPath: String, clusterName: String) {
     override def json(l: Location): String = write(l)
   }
 
-  val client = elasticClient(hosts, clusterName)
+  val client = ESUtil.elasticClient(hosts, clusterName)
 
   def loadInitialData(): Int = {
 
@@ -92,7 +92,8 @@ class GeoFoss(hosts: String, docPath: String, clusterName: String) {
               pin = geoLoc.split(",") match {
                 case Array(lat, lon) =>
                   Pin(lat.toDouble, lon.toDouble)
-              })
+              }
+            )
         }
       }
     locations

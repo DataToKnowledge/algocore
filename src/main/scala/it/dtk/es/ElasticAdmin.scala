@@ -1,6 +1,5 @@
 package it.dtk.es
 
-
 import it.dtk.HttpDownloader
 import play.api.libs.ws.WSResponse
 import scala.concurrent.Await

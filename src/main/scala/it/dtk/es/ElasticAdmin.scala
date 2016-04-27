@@ -17,12 +17,12 @@ class ElasticAdmin(adminHost: String, esHosts: String,
   val urlArticles = s"http://$adminHost:9200/news"
 
   def deleteIndex(): Boolean = {
-    val res = Await.result(HttpDownloader.wDelete(urlArticles), 10.seconds)
+    val res = Await.result(HttpDownloader.doDelete(urlArticles), 10.seconds)
     isError(res)
   }
 
   def existIndex(url: String): Boolean = {
-    HttpDownloader.wget(url)
+    HttpDownloader.doGetOption(url)
       .map(res => !res.body.contains("404"))
       .getOrElse(true)
   }
@@ -30,7 +30,7 @@ class ElasticAdmin(adminHost: String, esHosts: String,
   def createWtlIndex(): Boolean = {
     val in = this.getClass.getResourceAsStream("/wtl_mappings.json")
     val body = Source.fromInputStream(in).mkString
-    val res = Await.result(HttpDownloader.wPut(urlWtl, body), 10.seconds)
+    val res = Await.result(HttpDownloader.doPut(urlWtl, body), 10.seconds)
     in.close()
     isError(res)
   }
@@ -38,7 +38,7 @@ class ElasticAdmin(adminHost: String, esHosts: String,
   def createNewsIndex(): Boolean = {
     val in = this.getClass.getResourceAsStream("/articles_mappings.json")
     val body = Source.fromInputStream(in).mkString
-    val res = Await.result(HttpDownloader.wPut(urlArticles, body), 10.seconds)
+    val res = Await.result(HttpDownloader.doPut(urlArticles, body), 10.seconds)
     println(res.body)
     in.close()
     isError(res)

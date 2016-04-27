@@ -6,8 +6,10 @@ import org.json4s.JsonAST.JValue
 import org.json4s.jackson.JsonMethods._
 import play.api.libs.json._
 import scala.collection.mutable
+import scala.concurrent.Future
 import scala.util.Try
 import it.dtk.protobuf.Annotation.DocumentSection
+import scala.concurrent.duration._
 
 case class DbPediaTag(
   `@URI`: String,
@@ -164,7 +166,7 @@ object DBpedia {
    * @return
    */
   def getResource(dbpediaUrl: String): Option[JValue] = {
-    http.wget(dbpediaUrl + jsonld).map(r => parse(r.body))
+    http.doGetOption(dbpediaUrl + jsonld, 2.seconds).map(r => parse(r.body))
   }
 
   val filters = "Http" :: "DUL" :: "gml" :: "owl" :: "Schema" :: "List(" :: Nil

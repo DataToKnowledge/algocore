@@ -58,6 +58,13 @@ object model {
     schedulerData: SchedulerData = SchedulerData()
   )
 
+  case class GoogleNews(
+    search: String,
+    lang: String = "it",
+    category: String,
+    timestamp: DateTime = DateTime.now()
+  )
+
   case class QueryTerm(
     terms: List[String],
     lang: String = "it",

@@ -6,14 +6,14 @@ import com.ning.http.client.AsyncHttpClientConfig.Builder
 import play.api.libs.ws.WSResponse
 import play.api.libs.ws.ning.NingWSClient
 
-import scala.concurrent.duration.{FiniteDuration, _}
-import scala.concurrent.{Await, Future}
+import scala.concurrent.duration.{ FiniteDuration, _ }
+import scala.concurrent.{ Await, Future }
 import scala.language.postfixOps
 import scala.util.Try
 
 /**
-  * Created by fabiofumarola on 31/01/16.
-  */
+ * Created by fabiofumarola on 31/01/16.
+ */
 object HttpDownloader {
   //check for configurations https://www.playframework.com/documentation/2.4.x/ScalaWS
   private val builder = new Builder().
@@ -31,12 +31,11 @@ object HttpDownloader {
     ws.url(u).withFollowRedirects(true).get()
   }
 
-
   /**
-    *
-    * @param url the url to retrieve
-    * @return get a future to the url using Play WS
-    */
+   *
+   * @param url the url to retrieve
+   * @return get a future to the url using Play WS
+   */
   def doGetOption(url: String, timeout: FiniteDuration = 10.seconds): Option[WSResponse] =
     try {
       Some(Await.result(doGet(url), timeout))
@@ -47,7 +46,7 @@ object HttpDownloader {
     }
 
   def doPost(url: String, headers: Map[String, String],
-             parameters: Map[String, Seq[String]]): Future[WSResponse] = {
+    parameters: Map[String, Seq[String]]): Future[WSResponse] = {
     ws.url(url)
       .withFollowRedirects(true)
       .withHeaders(headers.toSeq: _*)
@@ -55,7 +54,7 @@ object HttpDownloader {
   }
 
   def wPost(url: String, headers: Map[String, String], parameters: Map[String, Seq[String]],
-            timeout: FiniteDuration = 10.seconds): Option[WSResponse] =
+    timeout: FiniteDuration = 10.seconds): Option[WSResponse] =
     try {
       Some(Await.result(doPost(url, headers, parameters), timeout))
     } catch {

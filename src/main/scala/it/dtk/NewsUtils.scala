@@ -6,7 +6,7 @@ import java.nio.charset.Charset
 import java.util.Locale
 
 import com.intenthq.gander.Gander
-import com.rometools.rome.io.{SyndFeedInput, XmlReader}
+import com.rometools.rome.io.{ SyndFeedInput, XmlReader }
 import it.dtk.model.Feed
 import it.dtk.nlp.StopWords
 import it.dtk.protobuf._
@@ -15,7 +15,7 @@ import org.apache.tika.metadata.Metadata
 import org.apache.tika.parser.html.HtmlParser
 import org.apache.tika.parser.pdf.PDFParser
 import org.apache.tika.parser.txt.TXTParser
-import org.apache.tika.parser.{ParseContext, Parser}
+import org.apache.tika.parser.{ ParseContext, Parser }
 import org.apache.tika.sax.BodyContentHandler
 import org.jsoup.Jsoup
 
@@ -31,11 +31,11 @@ object NewsUtils {
   import scala.concurrent.ExecutionContext.Implicits.global
 
   /**
-    *
-    * @param url
-    * @param publisher
-    * @return a seq the articles parsed using Rome
-    */
+   *
+   * @param url
+   * @param publisher
+   * @return a seq the articles parsed using Rome
+   */
   def parseFeed(url: String, publisher: String): Try[Seq[Article]] = Try {
     val input = new SyndFeedInput()
     val reader = input.build(new XmlReader(new URL(url)))
@@ -61,7 +61,8 @@ object NewsUtils {
         categories = e.getCategories.map(_.getName).toList,
         imageUrl = e.getEnclosures.map(_.getUrl).mkString(""),
         date = new DateTime(e.getPublishedDate).getMillis,
-        cleanedText = description)
+        cleanedText = description
+      )
     }.toList
   }
 
@@ -117,7 +118,8 @@ object NewsUtils {
             keywords = art.keywords ++ metaKeywords,
             date = date,
             lang = page.lang.getOrElse(""),
-            cleanedText = page.cleanedText.getOrElse(""))
+            cleanedText = page.cleanedText.getOrElse("")
+          )
 
         case None => art
 
@@ -169,11 +171,14 @@ object NewsUtils {
     parseFeed(url, "Google News")
   }
 
+  def extractFromGoogleNews(terms: String, lang: String): Try[Seq[Article]] =
+    extractFromGoogleNews(terms.split(" ").toList, lang)
+
 }
 
 /**
-  * Used to find news based on term queries
-  */
+ * Used to find news based on term queries
+ */
 object QueryTermsSearch {
 
   import java.text.SimpleDateFormat
@@ -188,22 +193,24 @@ object QueryTermsSearch {
   implicit val formats = org.json4s.DefaultFormats ++ org.json4s.ext.JodaTimeSerializers.all
 
   case class Image(
-                    url: String,
-                    tbUrl: String,
-                    originalContextUrl: String,
-                    publisher: String,
-                    tbWidth: Int,
-                    tbHeight: Int)
+    url: String,
+    tbUrl: String,
+    originalContextUrl: String,
+    publisher: String,
+    tbWidth: Int,
+    tbHeight: Int
+  )
 
   case class SearchResult(
-                           content: String,
-                           unescapedUrl: String,
-                           url: String,
-                           titleNoFormatting: String,
-                           publisher: String,
-                           publishedDate: String,
-                           language: String,
-                           image: Option[Image])
+    content: String,
+    unescapedUrl: String,
+    url: String,
+    titleNoFormatting: String,
+    publisher: String,
+    publishedDate: String,
+    language: String,
+    image: Option[Image]
+  )
 
   def decode(url: String): String =
     java.net.URLDecoder.decode(url, "UTF-8")
@@ -211,12 +218,12 @@ object QueryTermsSearch {
   //  val example = "https://ajax.googleapis.com/ajax/services/search/news?v=1.0&q=furti%20puglia&hl=it&rsz=8&scoring=d&start=0"
 
   /**
-    *
-    * @param query
-    * @param lang
-    * @param ipAddress
-    * @return a List of generate urls with the given term queries
-    */
+   *
+   * @param query
+   * @param lang
+   * @param ipAddress
+   * @return a List of generate urls with the given term queries
+   */
   def generateUrls(query: List[String], lang: String, ipAddress: String): Seq[String] = {
     val urlQuery = query.mkString("%20")
     val starts = (0 until 8).map(_ * 8)
@@ -234,10 +241,10 @@ object QueryTermsSearch {
   }
 
   /**
-    *
-    * @param url
-    * @return return a list of search Results
-    */
+   *
+   * @param url
+   * @return return a list of search Results
+   */
   def getResults(url: String): Future[List[SearchResult]] = {
     HttpDownloader.doGet(url).map { res =>
       val json = parse(res.body)
@@ -262,7 +269,8 @@ object QueryTermsSearch {
           publisher = res.publisher,
           date = date.getMillis,
           lang = res.language,
-          cleanedText = res.content)
+          cleanedText = res.content
+        )
       }
     }
   }

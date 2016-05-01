@@ -9,7 +9,9 @@ import org.elasticsearch.common.settings.Settings
 object ESUtil {
   def elasticClient(hosts: String, clusterName: String): ElasticClient = {
     val settings: Settings = Settings.settingsBuilder()
-      .put("cluster.name", clusterName).build()
+      .put("cluster.name", clusterName)
+      .put("client.transport.sniff", true).build()
+
     ElasticClient.transport(settings, ElasticsearchClientUri(s"elasticsearch://$hosts"))
   }
 }

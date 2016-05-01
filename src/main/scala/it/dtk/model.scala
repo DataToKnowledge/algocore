@@ -14,8 +14,7 @@ object model {
   case class SchedulerData(
     nextRange: FiniteDuration = 30 minutes,
     deltaRange: FiniteDuration = 5 minutes,
-    time: DateTime = DateTime.now
-  )
+    time: DateTime = DateTime.now)
 
   /**
    * helper companion object to setup the next schedule
@@ -24,15 +23,15 @@ object model {
     def next(scheduler: SchedulerData, extractedUrls: Int) = {
       val now = DateTime.now
       extractedUrls match {
-        case 0 ⇒
+        case 0 =>
           val nextRange = scheduler.nextRange + scheduler.deltaRange
           val time = now plus nextRange.toMillis
           scheduler.copy(nextRange = nextRange, time = time)
 
-        case x if x < 5 ⇒
+        case x if x < 5 =>
           scheduler.copy(time = now plus scheduler.nextRange.toMillis)
 
-        case x if x > 5 ⇒
+        case x if x > 5 =>
           val nextRange = if (scheduler.nextRange > 5.minutes) {
             scheduler.nextRange - scheduler.deltaRange
           } else scheduler.nextRange
@@ -55,21 +54,23 @@ object model {
     parsedUrls: List[String],
     lastTime: Option[DateTime],
     count: Long = 0,
-    schedulerData: SchedulerData = SchedulerData()
-  )
+    schedulerData: SchedulerData = SchedulerData())
 
   case class GoogleNews(
     search: String,
     lang: String = "it",
     category: String,
-    timestamp: DateTime = DateTime.now()
-  )
+    timestamp: DateTime = DateTime.now())
+
+  case class EventNews(
+    search: String,
+    lang: String = "it",
+    timestamp: DateTime = DateTime.now())
 
   case class QueryTerm(
     terms: List[String],
     lang: String = "it",
-    timestamp: Option[DateTime] = Some(DateTime.now().minusMinutes(10))
-  )
+    timestamp: Option[DateTime] = Some(DateTime.now().minusMinutes(10)))
 
   case class FlattenedNews(
     uri: String,
@@ -91,22 +92,19 @@ object model {
     semanticNames: Seq[String],
     semanticTags: Seq[String],
     annotations: Seq[SemanticTag],
-    pin: Option[it.dtk.protobuf.Pin]
-  )
+    pin: Option[it.dtk.protobuf.Pin])
 
   case class SemanticTag(
     name: String,
     wikipediaUrl: String,
     tags: Set[String],
     pin: Option[it.dtk.protobuf.Pin],
-    support: Long
-  )
+    support: Long)
 
   case class Pin(lat: Double, lon: Double)
 
   case class Tweet(
-    id: String
-  )
+    id: String)
 
   case class Follower(screenName: String, twitterUserId: String)
 

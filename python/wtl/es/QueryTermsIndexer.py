@@ -4,6 +4,7 @@ from datetime import datetime
 from elasticsearch import Elasticsearch
 from elasticsearch import helpers
 # import argparse
+import json
 
 
 class QueryTerm():

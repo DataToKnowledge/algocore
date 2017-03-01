@@ -11,7 +11,7 @@ import scala.io.Source
  * Created by fabiofumarola on 17/03/16.
  */
 class ElasticAdmin(adminHost: String, esHosts: String,
-    gFossPath: String, clusterName: String) {
+    gFossIndexType: String, gFossDocType: String, clusterName: String) {
 
   val urlWtl = s"http://$adminHost:9200/wtl1"
   val urlArticles = s"http://$adminHost:9200/news1"
@@ -22,9 +22,7 @@ class ElasticAdmin(adminHost: String, esHosts: String,
   }
 
   def existIndex(url: String): Boolean = {
-    HttpDownloader.doGetOption(url)
-      .map(res => !res.body.contains("404"))
-      .getOrElse(true)
+    HttpDownloader.doGetOption(url).forall(res => !res.body.contains("404"))
   }
 
   def createWtlIndex(): Boolean = {
@@ -45,7 +43,7 @@ class ElasticAdmin(adminHost: String, esHosts: String,
   }
 
   def loadGFossData(): Int = {
-    val gfoss = new GeoFoss(esHosts, gFossPath, clusterName)
+    val gfoss = new GeoFoss(esHosts, gFossIndexType, gFossDocType, clusterName)
     val res = gfoss.loadInitialData()
     gfoss.close()
     res

@@ -14,7 +14,8 @@ object model {
   case class SchedulerData(
     nextRange: FiniteDuration = 30 minutes,
     deltaRange: FiniteDuration = 5 minutes,
-    time: DateTime = DateTime.now)
+    time: DateTime = DateTime.now
+  )
 
   /**
    * helper companion object to setup the next schedule
@@ -54,23 +55,27 @@ object model {
     parsedUrls: List[String],
     lastTime: Option[DateTime],
     count: Long = 0,
-    schedulerData: SchedulerData = SchedulerData())
+    schedulerData: SchedulerData = SchedulerData()
+  )
 
   case class GoogleNews(
     search: String,
     lang: String = "it",
     category: String,
-    timestamp: DateTime = DateTime.now())
+    timestamp: DateTime = DateTime.now()
+  )
 
   case class EventNews(
     search: String,
     lang: String = "it",
-    timestamp: DateTime = DateTime.now())
+    timestamp: DateTime = DateTime.now()
+  )
 
   case class QueryTerm(
     terms: List[String],
     lang: String = "it",
-    timestamp: Option[DateTime] = Some(DateTime.now().minusMinutes(10)))
+    timestamp: Option[DateTime] = Some(DateTime.now().minusMinutes(10))
+  )
 
   case class FlattenedNews(
     uri: String,
@@ -92,19 +97,22 @@ object model {
     semanticNames: Seq[String],
     semanticTags: Seq[String],
     annotations: Seq[SemanticTag],
-    pin: Option[it.dtk.protobuf.Pin])
+    pin: Option[it.dtk.protobuf.Pin]
+  )
 
   case class SemanticTag(
     name: String,
     wikipediaUrl: String,
     tags: Set[String],
     pin: Option[it.dtk.protobuf.Pin],
-    support: Long)
+    support: Long
+  )
 
   case class Pin(lat: Double, lon: Double)
 
   case class Tweet(
-    id: String)
+    id: String
+  )
 
   case class Follower(screenName: String, twitterUserId: String)
 

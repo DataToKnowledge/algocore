@@ -67,22 +67,19 @@
           "index": "no"
         },
         "cityName": {
-          "type": "string",
+          "type": "text",
           "index": "not_analyzed"
         },
         "provinceName": {
-          "type": "string",
+          "type": "text",
           "index": "not_analyzed"
         },
         "regionName": {
-          "type": "string",
+          "type": "text",
           "index": "not_analyzed"
         },
         "pin": {
-          "type": "geo_point",
-          "geohash": true,
-          "lat_lon": true,
-          "geohash_precision": "100m"
+          "type": "geo_point"
         }
       }
     }

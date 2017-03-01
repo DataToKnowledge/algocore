@@ -63,121 +63,118 @@
     "articles": {
       "properties": {
         "uri": {
-          "type": "string",
+          "type": "text",
           "index": "no"
         },
         "title": {
-          "type": "string",
+          "type": "text",
           "analyzer": "italian"
         },
         "description": {
-          "type": "string",
+          "type": "text",
           "analyzer": "italian"
         },
         "categories": {
-          "type": "string",
+          "type": "text",
           "index": "not_analyzed",
           "fields": {
             "lower": {
-              "type": "string",
+              "type": "text",
               "index": "not_analyzed",
               "analyzer": "not_analyzed_lower"
             }
           }
         },
         "keywords": {
-          "type": "string",
+          "type": "text",
           "index": "not_analyzed",
           "fields": {
             "lower": {
-              "type": "string",
+              "type": "text",
               "analyzer": "not_analyzed_lower"
             }
           }
         },
         "imageUrl": {
-          "type": "string",
+          "type": "text",
           "index": "no"
         },
         "publisher": {
-          "type": "string",
+          "type": "text",
           "index": "not_analyzed"
         },
         "date": {
           "type": "date"
         },
         "lang": {
-          "type": "string",
+          "type": "text",
           "index": "not_analyzed"
         },
         "text": {
-          "type": "string",
+          "type": "text",
           "analyzer": "italian"
         },
         "pin": {
-          "type": "geo_point",
-          "geohash": true,
-          "lat_lon": true,
-          "geohash_precision": "100m"
+          "type": "geo_point"
         },
         "cityName": {
-          "type": "string",
+          "type": "text",
           "index": "not_analyzed"
         },
         "provinceName": {
-          "type": "string",
+          "type": "text",
           "index": "not_analyzed"
         },
         "regionName": {
-          "type": "string",
+          "type": "text",
           "index": "not_analyzed"
         },
         "crimes": {
-          "type": "string",
+          "type": "text",
           "index": "not_analyzed",
           "fields": {
             "lower": {
-              "type": "string",
+              "type": "text",
               "analyzer": "not_analyzed_lower"
             }
           }
         },
         "locations": {
-          "type": "string",
+          "type": "text",
           "index": "not_analyzed",
           "fields": {
             "lower": {
-              "type": "string",
+              "type": "text",
               "analyzer": "not_analyzed_lower"
             }
           }
         },
         "persons": {
-          "type": "string",
+          "type": "text",
           "index": "not_analyzed",
           "fields": {
             "lower": {
-              "type": "string",
+              "type": "text",
               "analyzer": "not_analyzed_lower"
             }
           }
         },
         "semanticNames": {
-          "type": "string",
+          "type": "text",
           "index": "not_analyzed",
           "fields": {
             "lower": {
-              "type": "string",
+              "type": "text",
               "analyzer": "not_analyzed_lower"
             }
           }
         },
         "semanticTags": {
-          "type": "string",
+          "type": "text",
           "index": "not_analyzed",
           "fields": {
             "lower": {
-              "type": "string",
+              "type": "text",
               "analyzer": "not_analyzed_lower"
             }
           }
@@ -186,25 +183,25 @@
           "type": "nested",
           "properties": {
             "name": {
-              "type": "string",
+              "type": "text",
               "index": "not_analyzed",
               "fields": {
                 "lower": {
-                  "type": "string",
+                  "type": "text",
                   "analyzer": "not_analyzed_lower"
                 }
               }
             },
             "wikipediUrl": {
-              "type": "string",
+              "type": "text",
               "index": "no"
             },
             "tags": {
-              "type": "string",
+              "type": "text",
               "index": "not_analyzed",
               "fields": {
                 "lower": {
-                  "type": "string",
+                  "type": "text",
                   "analyzer": "not_analyzed_lower"
                 }
               }
@@ -218,10 +215,7 @@
               "index": "no"
             },
             "pin": {
-              "type": "geo_point",
-              "geohash": true,
-              "lat_lon": true,
-              "geohash_precision": "100m"
+              "type": "geo_point"
             }
           }
         },
@@ -233,40 +227,37 @@
               "index": "no"
             },
             "cityName": {
-              "type": "string",
+              "type": "text",
               "index": "not_analyzed",
               "fields": {
                 "lower": {
-                  "type": "string",
+                  "type": "text",
                   "analyzer": "not_analyzed_lower"
                 }
               }
             },
             "provinceName": {
-              "type": "string",
+              "type": "text",
               "index": "not_analyzed",
               "fields": {
                 "lower": {
-                  "type": "string",
+                  "type": "text",
                   "analyzer": "not_analyzed_lower"
                 }
               }
             },
             "regionName": {
-              "type": "string",
+              "type": "text",
               "index": "not_analyzed",
               "fields": {
                 "lower": {
-                  "type": "string",
+                  "type": "text",
                   "analyzer": "not_analyzed_lower"
                 }
               }
             },
             "pin": {
-              "type": "geo_point",
-              "geohash": true,
-              "lat_lon": true,
-              "geohash_precision": "100m"
+              "type": "geo_point"
             }
           }
         }

@@ -28,8 +28,9 @@ libraryDependencies ++= Seq(
   "com.iheart" %% "ficus" % "1.2.0",
   "org.apache.opennlp" % "opennlp-tools" % "1.6.0",
   "com.typesafe" % "config" % "1.3.0",
-  "com.sksamuel.elastic4s" %% "elastic4s-core" % "2.2.1",
-  "com.sksamuel.elastic4s" %% "elastic4s-jackson" % "2.2.1",
+  "com.sksamuel.elastic4s" %% "elastic4s-core" % "5.2.9",
+  "com.sksamuel.elastic4s" %% "elastic4s-jackson" % "5.2.9",
+  "com.sksamuel.elastic4s" %% "elastic4s-tcp" % "5.2.9",
   "com.intenthq" %% "gander" % "1.3",
   "net.sandrogrzicic" %% "scalabuff-runtime" % "1.4.0"
 )

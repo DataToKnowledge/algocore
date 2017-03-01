@@ -6,9 +6,9 @@ import it.dtk.protobuf._
 /**
  * Created by fabiofumarola on 11/02/16.
  */
-class FocusLocation(elasticHosts: String, docPath: String, clusterName: String) {
+class FocusLocation(elasticHosts: String, indexType: String, docType: String, clusterName: String) {
 
-  val gfoss = new GeoFoss(elasticHosts, docPath, clusterName)
+  val gfoss = new GeoFoss(elasticHosts, indexType, docType, clusterName)
   val locationConsts = List("PopulatedPlace", "Place", "Location")
 
   def isLocation(a: Annotation): Boolean = {

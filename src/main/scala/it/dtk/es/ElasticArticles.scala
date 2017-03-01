@@ -1,9 +1,7 @@
 package it.dtk.es
 
 import com.sksamuel.elastic4s.ElasticDsl._
-import com.sksamuel.elastic4s._
 import it.dtk.HttpDownloader
-import org.elasticsearch.common.settings.Settings
 import org.json4s.JsonAST.JValue
 import org.json4s._
 import org.json4s.ext.JodaTimeSerializers
@@ -11,7 +9,7 @@ import org.json4s.jackson.JsonMethods._
 import org.json4s.jackson.Serialization
 import play.api.libs.json._
 
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
  * Created by fabiofumarola on 16/03/16.

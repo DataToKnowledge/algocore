@@ -1,26 +1,22 @@
 package it.dtk.es
 
 import com.sksamuel.elastic4s.ElasticDsl._
-import com.sksamuel.elastic4s.source.Indexable
-import com.sksamuel.elastic4s.{ ElasticClient, ElasticsearchClientUri }
-import com.typesafe.config.ConfigFactory
+import com.sksamuel.elastic4s.Indexable
 import it.dtk.protobuf._
-import net.ceedubs.ficus.Ficus._
-import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.index.query.MatchQueryBuilder
 import org.json4s._
 import org.json4s.ext.JodaTimeSerializers
 import org.json4s.jackson.JsonMethods._
 import org.json4s.jackson.Serialization
 import org.json4s.jackson.Serialization.write
-import scala.concurrent.ExecutionContext
+
 import scala.concurrent.duration._
 import scala.io.Source
 
 /**
  * Created by fabiofumarola on 08/02/16.
  */
-class GeoFoss(hosts: String, docPath: String, clusterName: String) {
+class GeoFoss(hosts: String, indexType: String, docType: String, clusterName: String) {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -35,7 +31,7 @@ class GeoFoss(hosts: String, docPath: String, clusterName: String) {
   def loadInitialData(): Int = {
 
     val indexReq = loadCsv()
-      .map(l => index into docPath id l.id source l)
+      .map(l => indexInto(indexType,docType) id l.id source l)
 
     implicit val duration: Duration = 60.seconds
 
@@ -54,19 +50,18 @@ class GeoFoss(hosts: String, docPath: String, clusterName: String) {
    */
   def findLocation(name: String, maxCount: Int = 1): Seq[Location] = {
     val query = client.execute {
-      search in docPath limit maxCount query {
-        matchQuery("cityName", name).operator(MatchQueryBuilder.Operator.AND)
+      search(indexType, docType) limit maxCount query {
+          matchQuery("cityName",name).operator(org.elasticsearch.index.query.Operator.AND)
       }
     }
-
     query.map { r =>
-      r.getHits.hits()
-        .map(s => parse(s.getSourceAsString).extract[Location])
+      r.hits
+        .map(s => parse(s.sourceAsString).extract[Location])
     }.await
   }
 
   def indexExists(): Boolean = client.execute {
-    index exists docPath
+    index exists indexType + "/" + docType
   }.await.isExists
 
   private def loadCsv(): Iterator[Location] = {
@@ -76,25 +71,23 @@ class GeoFoss(hosts: String, docPath: String, clusterName: String) {
       .getLines()
       .map(_.split("\\|"))
       .filter(_.length == 12)
-      .map { split =>
-        split match {
-          case Array(id, istatId, cityName, provId, provName, regId, regName,
-            pop, srcId, wikiUrl, geoUrl, geoLoc) =>
+      .map {
+        case Array(id, istatId, cityName, provId, provName, regId, regName,
+        pop, srcId, wikiUrl, geoUrl, geoLoc) =>
 
-            Location(
-              id = id.toInt,
-              cityName = cityName,
-              //              provinceId = provId.toInt,
-              provinceName = provName,
-              //              regionId = regId.toInt,
-              regionName = regName,
-              //              population = pop.toInt,
-              pin = geoLoc.split(",") match {
-                case Array(lat, lon) =>
-                  Pin(lat.toDouble, lon.toDouble)
-              }
-            )
-        }
+          Location(
+            id = id.toInt,
+            cityName = cityName,
+            //              provinceId = provId.toInt,
+            provinceName = provName,
+            //              regionId = regId.toInt,
+            regionName = regName,
+            //              population = pop.toInt,
+            pin = geoLoc.split(",") match {
+              case Array(lat, lon) =>
+                Pin(lat.toDouble, lon.toDouble)
+            }
+          )
       }
     locations
   }

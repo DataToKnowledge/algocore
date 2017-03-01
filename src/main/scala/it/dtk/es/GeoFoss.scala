@@ -31,7 +31,7 @@ class GeoFoss(hosts: String, indexType: String, docType: String, clusterName: St
   def loadInitialData(): Int = {
 
     val indexReq = loadCsv()
-      .map(l => indexInto(indexType,docType) id l.id source l)
+      .map(l => indexInto(indexType, docType) id l.id source l)
 
     implicit val duration: Duration = 60.seconds
 
@@ -51,7 +51,7 @@ class GeoFoss(hosts: String, indexType: String, docType: String, clusterName: St
   def findLocation(name: String, maxCount: Int = 1): Seq[Location] = {
     val query = client.execute {
       search(indexType, docType) limit maxCount query {
-          matchQuery("cityName",name).operator(org.elasticsearch.index.query.Operator.AND)
+        matchQuery("cityName", name).operator(org.elasticsearch.index.query.Operator.AND)
       }
     }
     query.map { r =>
@@ -73,7 +73,7 @@ class GeoFoss(hosts: String, indexType: String, docType: String, clusterName: St
       .filter(_.length == 12)
       .map {
         case Array(id, istatId, cityName, provId, provName, regId, regName,
-        pop, srcId, wikiUrl, geoUrl, geoLoc) =>
+          pop, srcId, wikiUrl, geoUrl, geoLoc) =>
 
           Location(
             id = id.toInt,

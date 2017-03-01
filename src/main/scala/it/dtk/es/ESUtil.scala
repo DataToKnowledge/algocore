@@ -1,6 +1,6 @@
 package it.dtk.es
 
-import com.sksamuel.elastic4s.{ElasticsearchClientUri, TcpClient}
+import com.sksamuel.elastic4s.{ ElasticsearchClientUri, TcpClient }
 import org.elasticsearch.common.settings.Settings
 
 /**
@@ -10,7 +10,7 @@ object ESUtil {
   def elasticClient(hosts: String, clusterName: String) = {
     val settings: Settings = Settings.builder()
       .put("cluster.name", clusterName).build()
-
+    println(s"connecting to $hosts")
     TcpClient.transport(settings, ElasticsearchClientUri(s"elasticsearch://$hosts"))
   }
 }

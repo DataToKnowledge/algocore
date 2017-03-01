@@ -13,7 +13,7 @@ import org.json4s.jackson.JsonMethods._
 import org.json4s.jackson.Serialization
 import org.json4s.jackson.Serialization._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 /**
  * Created by fabiofumarola on 30/04/16.
@@ -23,11 +23,11 @@ class ElasticGoogleNews(hosts: String, indexType: String, docType: String, clust
 
   val client = ESUtil.elasticClient(hosts, clusterName)
 
-//  implicit object GoogleNewsHitAs extends HitAs[GoogleNews] {
-//    override def as(hit: RichSearchHit): GoogleNews = {
-//      parse(hit.getSourceAsString).extract[GoogleNews]
-//    }
-//  }
+  //  implicit object GoogleNewsHitAs extends HitAs[GoogleNews] {
+  //    override def as(hit: RichSearchHit): GoogleNews = {
+  //      parse(hit.getSourceAsString).extract[GoogleNews]
+  //    }
+  //  }
 
   implicit object GoogleNewsIndexable extends Indexable[GoogleNews] {
     override def json(t: GoogleNews): String = write(t)
@@ -45,7 +45,7 @@ class ElasticGoogleNews(hosts: String, indexType: String, docType: String, clust
   }
 
   def googleNewsSortedDesc(): SearchDefinition = {
-    search(indexType,docType) query matchAllQuery sort {
+    search(indexType, docType) query matchAllQuery sort {
       fieldSort("timestamp") order SortOrder.DESC
     }
   }
@@ -59,7 +59,7 @@ class ElasticGoogleNews(hosts: String, indexType: String, docType: String, clust
    *         call listQueryTerm(...).await to get results
    */
   def listGoogleNews(fromIndex: Int = 0, sizeRes: Int = 10)(implicit ex: ExecutionContext): Future[Seq[GoogleNews]] = {
-    val req = search(indexType,docType) query matchAllQuery from fromIndex size sizeRes
+    val req = search(indexType, docType) query matchAllQuery from fromIndex size sizeRes
     client.execute(req).map(_.hits.map(e => parse(e.sourceAsString).extract[GoogleNews]))
   }
 

@@ -10,7 +10,7 @@ import org.json4s.jackson.JsonMethods._
 import org.json4s.jackson.Serialization
 import org.json4s.jackson.Serialization.write
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 /**
  * Created by fabiofumarola on 27/02/16.
@@ -34,7 +34,7 @@ class ElasticFeeds(hosts: String, indexType: String, docType: String, clusterNam
 
   def createOrUpdate(feed: Feed)(implicit ex: ExecutionContext): Future[RichIndexResponse] = {
     client.execute(
-      indexInto(indexType,docType) id feed.url source feed
+      indexInto(indexType, docType) id feed.url source feed
     )
   }
 

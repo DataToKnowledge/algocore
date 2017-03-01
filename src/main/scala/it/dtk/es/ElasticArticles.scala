@@ -9,7 +9,7 @@ import org.json4s.jackson.JsonMethods._
 import org.json4s.jackson.Serialization
 import play.api.libs.json._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 /**
  * Created by fabiofumarola on 16/03/16.
